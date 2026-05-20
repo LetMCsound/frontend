@@ -1,0 +1,40 @@
+ACUERDO DE LICENCIA NO EXCLUSIVA (PREMIUM WAV)
+
+ID DE TRANSACCIÓN: {ID_VENTA}
+FECHA DEL ACUERDO: {FECHA}
+
+ENTRE:
+LICENCIANTE (Productor): LetMC Sound (Kairo Wave)
+LICENCIATARIO (Artista): {COMPRADOR}
+
+OBJETO DEL ACUERDO:
+El Licenciante otorga al Licenciatario derechos no exclusivos para el uso de la obra musical instrumental titulada:
+"{TITULO}"
+
+PRECIO DE LA LICENCIA: {PRECIO}
+
+1. ENTREGABLES
+Tras el pago, el Licenciante entrega al Licenciatario el archivo de audio en formato WAV de alta calidad (sin marcas de agua de voz).
+
+2. DERECHOS OTORGADOS
+El Licenciatario tiene derecho a:
+- Distribuir la obra en plataformas digitales (Spotify, Apple Music, etc.).
+- Límite de reproducciones (Streams): HASTA 500,000 (Quinientos mil).
+- Uso en videoclips musicales: 1 Video con monetización permitida.
+- Transmisión en Radio: Permitido en hasta 2 estaciones de radio regionales.
+- Actuaciones en vivo con fines de lucro: Permitido.
+
+3. RESTRICCIONES
+- Esta licencia NO transfiere la propiedad del beat. El Productor sigue siendo el dueño de los derechos de autor.
+- El Licenciatario no puede revender, prestar o alquilar el archivo instrumental por sí solo.
+
+4. CRÉDITOS
+El Licenciatario debe dar crédito al Productor en todos los metadatos y descripciones como:
+"Prod. by Kairo Wave" o "Prod. LetMC Sound".
+
+5. REGALÍAS (ROYALTIES)
+El Licenciatario conserva el 100% de los ingresos por ventas digitales hasta alcanzar los límites establecidos. Para el registro de la canción (Publishing), el Productor retiene el 50% de los derechos de autor de la composición musical.
+
+_____________________________
+Firma Digital del Productor
+LetMC Sound Management

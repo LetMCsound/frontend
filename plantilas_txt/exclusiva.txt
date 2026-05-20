@@ -1,0 +1,42 @@
+CONTRATO DE DERECHOS EXCLUSIVOS
+
+ID DE TRANSACCIÓN: {ID_VENTA}
+FECHA: {FECHA}
+
+ESTE ACUERDO certifica la transferencia de derechos exclusivos entre:
+VENDEDOR: LetMC Sound (Kairo Wave)
+COMPRADOR: {COMPRADOR}
+
+OBRA MUSICAL (BEAT):
+Título: "{TITULO}"
+Precio Pagado: {PRECIO}
+
+1. TRANSFERENCIA DE DERECHOS
+Por la presente, el Vendedor otorga al Comprador los DERECHOS EXCLUSIVOS de uso sobre la obra musical mencionada. El Vendedor garantiza que no volverá a vender ni licenciar este beat a partir de la fecha de hoy.
+
+NOTA: Las licencias no exclusivas vendidas anteriormente a otros artistas siguen siendo válidas hasta el vencimiento de sus términos.
+
+2. ENTREGABLES
+El Comprador recibe:
+- Archivo MP3 (Masterizado y Sin Masterizar).
+- Archivo WAV de Alta Calidad (24-bit).
+- TRACKOUTS / STEMS (Pistas separadas por instrumento para mezcla profesional).
+
+3. TÉRMINOS DE USO (ILIMITADO)
+- Streams en Spotify/Apple Music: ILIMITADOS.
+- Ventas físicas y digitales: ILIMITADAS.
+- Videos musicales: ILIMITADOS.
+- Transmisión en Radio y TV: ILIMITADA.
+- Uso comercial y sincronización: PERMITIDO SIN RESTRICCIONES.
+
+4. PROPIEDAD INTELECTUAL Y PUBLISHING
+Aunque el Comprador tiene derechos exclusivos de uso comercial, la autoría intelectual de la música original (composición) permanece compartida.
+- Writer's Share (Compositor): 50% Comprador (Letra) / 50% Productor (Música).
+- El Comprador debe registrar la canción dando crédito a "Kairo Wave" como co-compositor.
+
+5. ACEPTACIÓN
+Al realizar esta compra, ambas partes aceptan estos términos como vinculantes y definitivos.
+
+_____________________________
+Firma Autorizada
+LetMC Sound / Kairo Wave

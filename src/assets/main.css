@@ -1,0 +1,667 @@
+/* =====================================================
+   LETMC SOUND — Global Styles
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Reset */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ── CSS Variables ─────────────────────────────────── */
+:root {
+  --accent:        #b11db9;
+  --accent-hover:  #9a18a3;
+  --accent-light:  rgba(177, 29, 185, 0.15);
+  --accent-border: rgba(177, 29, 185, 0.4);
+
+  /* Dark theme (default) */
+  --bg:            #0b0b0f;
+  --bg-surface:    #111116;
+  --bg-card:       rgba(255,255,255,0.04);
+  --bg-sidebar:    #0d0d12;
+  --border:        rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.14);
+  --text:          #f0f0f0;
+  --text-muted:    #888;
+  --text-soft:     #ccc;
+  --topbar-bg:     rgba(11,11,15,0.92);
+  --input-bg:      rgba(255,255,255,0.06);
+  --shadow:        0 4px 24px rgba(0,0,0,0.4);
+}
+
+/* Light theme */
+body.light-theme {
+  --bg:            #f4f4f8;
+  --bg-surface:    #ffffff;
+  --bg-card:       #ffffff;
+  --bg-sidebar:    #1a0a2e;
+  --border:        rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.16);
+  --text:          #1a1a2e;
+  --text-muted:    #6b6b80;
+  --text-soft:     #444455;
+  --topbar-bg:     rgba(244,244,248,0.92);
+  --input-bg:      rgba(0,0,0,0.05);
+  --shadow:        0 4px 24px rgba(0,0,0,0.1);
+}
+
+/* ── Base ──────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s, color 0.3s;
+  min-height: 100vh;
+}
+
+/* ── Typography ────────────────────────────────────── */
+h1, h2, h3, h4, h5 { color: var(--text); }
+p { color: var(--text-soft); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); }
+
+/* ── Scrollbar ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(177,29,185,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ── Layout ────────────────────────────────────────── */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 70px;
+  min-height: 100vh;
+  background: var(--bg);
+  overflow-x: hidden;
+  transition: margin-left 0.3s;
+}
+
+/* ── Cards & Surfaces ──────────────────────────────── */
+.card-surface {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.card-surface:hover {
+  border-color: var(--accent-border);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+
+/* Light theme card adjustments */
+body.light-theme .card-surface {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+/* ── Inputs globales ───────────────────────────────── */
+input, select, textarea {
+  font-family: 'Poppins', sans-serif;
+  background: var(--input-bg);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 0.65rem 0.9rem;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+}
+input::placeholder, textarea::placeholder {
+  color: var(--text-muted);
+}
+select option {
+  background: var(--bg-surface);
+  color: var(--text);
+}
+
+/* Light theme inputs */
+body.light-theme input,
+body.light-theme select,
+body.light-theme textarea {
+  background: #fff;
+  border-color: rgba(0,0,0,0.15);
+  color: var(--text);
+}
+
+/* ── Buttons ───────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  font-family: 'Poppins', sans-serif;
+}
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 10px 22px;
+  border-radius: 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Poppins', sans-serif;
+}
+.btn-outline:hover { background: var(--accent-light); }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+  padding: 8px 18px;
+  border-radius: 24px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Poppins', sans-serif;
+}
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+
+/* ── Tags & Chips ──────────────────────────────────── */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--accent-light);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* ── Spinners & States ─────────────────────────────── */
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--accent-light);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Animate ───────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeIn 0.4s ease; }
+
+/* ── Section headers ───────────────────────────────── */
+.section-title {
+  font-family: 'Impact', sans-serif;
+  font-size: 2rem;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+}
+
+/* ── Modals ────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(6px);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Light theme modal */
+body.light-theme .modal-box {
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+}
+
+/* ── Light theme — secciones específicas ───────────── */
+body.light-theme .profile-header-modern {
+  box-shadow: inset 0 -120px 80px -20px rgba(0,0,0,0.6);
+}
+
+body.light-theme .section {
+  background: #fff;
+  border-color: rgba(0,0,0,0.08);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+body.light-theme .section-header h2 {
+  color: var(--text);
+}
+
+body.light-theme .topbar {
+  background: var(--topbar-bg);
+  border-bottom-color: var(--border);
+}
+
+body.light-theme .search-wrap {
+  background: #fff;
+  border-color: rgba(0,0,0,0.12);
+}
+
+body.light-theme .search-wrap input {
+  background: transparent;
+  color: var(--text);
+}
+
+body.light-theme .design-card,
+body.light-theme .film-card,
+body.light-theme .musician-card,
+body.light-theme .lyric-card {
+  background: #fff;
+  border-color: rgba(0,0,0,0.08);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+body.light-theme .design-info h3,
+body.light-theme .film-text h3,
+body.light-theme .m-name {
+  color: var(--text);
+}
+
+body.light-theme .design-seller,
+body.light-theme .film-seller,
+body.light-theme .m-bio,
+body.light-theme .m-meta span {
+  color: var(--text-muted);
+}
+
+body.light-theme .config-section {
+  background: #fff;
+  border-color: rgba(0,0,0,0.08);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+body.light-theme .form-group label {
+  color: var(--text-muted);
+}
+
+body.light-theme .notif-dropdown {
+  background: #fff;
+  border-color: rgba(0,0,0,0.12);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+body.light-theme .notif-item { border-color: rgba(0,0,0,0.05); }
+body.light-theme .notif-item:hover { background: rgba(0,0,0,0.03); }
+body.light-theme .notif-title { color: var(--text); }
+body.light-theme .notif-text { color: var(--text-muted); }
+
+body.light-theme .conv-item {
+  background: #fff;
+  border-color: rgba(0,0,0,0.08);
+}
+body.light-theme .conv-top h3 { color: var(--text); }
+
+body.light-theme .chat-window {
+  background: #fff;
+  border-color: rgba(0,0,0,0.12);
+}
+body.light-theme .chat-header {
+  border-color: rgba(0,0,0,0.08);
+}
+body.light-theme .chat-info h3 { color: var(--text); }
+body.light-theme .bubble {
+  background: #f0f0f5;
+  border-color: rgba(0,0,0,0.08);
+}
+body.light-theme .msg-text { color: var(--text); }
+body.light-theme .msg-input {
+  background: #f0f0f5;
+  border-color: rgba(0,0,0,0.1);
+  color: var(--text);
+}
+
+body.light-theme .pin-modal,
+body.light-theme .film-modal {
+  background: #fff;
+}
+body.light-theme .pin-left,
+body.light-theme .film-body .film-left {
+  background: #f4f4f8;
+}
+body.light-theme .pin-info h2,
+body.light-theme .film-header h2 { color: var(--text); }
+body.light-theme .pin-desc,
+body.light-theme .film-desc p { color: var(--text-muted); }
+
+body.light-theme .comment-body .comment-author { color: var(--text); }
+body.light-theme .comment-body .comment-text { color: var(--text-muted); }
+body.light-theme .comment-input {
+  background: #f0f0f5;
+  border-color: rgba(0,0,0,0.1);
+  color: var(--text);
+}
+body.light-theme .comments-list { border-color: rgba(0,0,0,0.05); }
+
+body.light-theme .beat-details {
+  background: #f4f4f8;
+}
+body.light-theme .modal-content {
+  background: #fff;
+  border-color: rgba(0,0,0,0.12);
+}
+body.light-theme .modal-left {
+  background: #f4f4f8;
+  border-color: rgba(0,0,0,0.08);
+}
+
+body.light-theme .auth-box {
+  background: #fff;
+  border-color: rgba(0,0,0,0.1);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+}
+
+body.light-theme .profile-url-bar {
+  background: rgba(177,29,185,0.08);
+  border-color: rgba(177,29,185,0.2);
+}
+
+/* ── Responsive ────────────────────────────────────── */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+}
+
+/* =====================================================
+   LIGHT THEME — Override forzado para textos y fondos
+   Cubre todos los componentes scoped
+   ===================================================== */
+
+/* Títulos Impact (h1 con font-family Impact) */
+body.light-theme h1,
+body.light-theme h2,
+body.light-theme h3,
+body.light-theme h4 {
+  color: var(--text) !important;
+}
+
+/* Texto general */
+body.light-theme p,
+body.light-theme span:not(.chip):not(.badge):not(.tag):not(.cat-chip):not(.genre-tag):not(.status-badge) {
+  color: var(--text-soft);
+}
+
+/* Fondos de secciones y cards */
+body.light-theme .section,
+body.light-theme .config-section,
+body.light-theme .auth-box,
+body.light-theme .profile-section {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+/* Inputs en modo claro */
+body.light-theme input,
+body.light-theme select,
+body.light-theme textarea {
+  background: #f5f5f8 !important;
+  border-color: rgba(0,0,0,0.15) !important;
+  color: var(--text) !important;
+}
+body.light-theme input::placeholder,
+body.light-theme textarea::placeholder {
+  color: #999 !important;
+}
+
+/* Labels */
+body.light-theme label,
+body.light-theme .upload-label,
+body.light-theme .form-group label {
+  color: #555 !important;
+}
+
+/* Títulos de secciones con borde izquierdo morado */
+body.light-theme .section-header h2,
+body.light-theme .config-section h2,
+body.light-theme .page-header h1,
+body.light-theme .header-text h1 {
+  color: var(--text) !important;
+}
+
+/* Subtítulos y descripciones */
+body.light-theme .header-text p,
+body.light-theme .artist-bio,
+body.light-theme .beat-desc,
+body.light-theme .pin-desc,
+body.light-theme .film-desc p,
+body.light-theme .lyric-desc,
+body.light-theme .m-bio,
+body.light-theme .film-seller,
+body.light-theme .design-seller {
+  color: #555 !important;
+}
+
+/* Cards */
+body.light-theme .design-card,
+body.light-theme .film-card,
+body.light-theme .lyric-card,
+body.light-theme .musician-card,
+body.light-theme .conv-item,
+body.light-theme .notif-item {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* Nombres en cards */
+body.light-theme .design-info h3,
+body.light-theme .film-text h3,
+body.light-theme .m-name,
+body.light-theme .conv-top h3,
+body.light-theme .notif-title,
+body.light-theme .author-name,
+body.light-theme .comment-author,
+body.light-theme .lyric-top-row h3 {
+  color: #1a1a2e !important;
+}
+
+/* Metadatos secundarios */
+body.light-theme .film-meta span,
+body.light-theme .m-meta span,
+body.light-theme .design-style,
+body.light-theme .film-seller,
+body.light-theme .lyric-composer,
+body.light-theme .comment-text,
+body.light-theme .notif-text {
+  color: #666 !important;
+}
+
+/* Modales */
+body.light-theme .modal-content,
+body.light-theme .pin-modal,
+body.light-theme .film-modal,
+body.light-theme .lyric-modal,
+body.light-theme .chat-window,
+body.light-theme .form-box,
+body.light-theme .selector-box {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.1) !important;
+}
+
+body.light-theme .modal-left,
+body.light-theme .pin-left,
+body.light-theme .lyric-left,
+body.light-theme .video-section ~ .film-body .film-left {
+  background: #f4f4f8 !important;
+}
+
+body.light-theme .beat-details,
+body.light-theme .lyric-meta-box {
+  background: #f4f4f8 !important;
+}
+
+body.light-theme .beat-title,
+body.light-theme .pin-info h2,
+body.light-theme .lyric-title-section h2,
+body.light-theme .film-header h2 {
+  color: #1a1a2e !important;
+}
+
+/* Chat */
+body.light-theme .chat-window,
+body.light-theme .messages-area {
+  background: #ffffff !important;
+}
+body.light-theme .bubble {
+  background: #f0f0f5 !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+body.light-theme .msg-text { color: #1a1a2e !important; }
+body.light-theme .msg-input {
+  background: #f0f0f5 !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: #1a1a2e !important;
+}
+body.light-theme .chat-info h3 { color: #1a1a2e !important; }
+body.light-theme .system-msg {
+  background: #f0f0f5 !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  color: #555 !important;
+}
+
+/* Notificaciones dropdown */
+body.light-theme .notif-dropdown {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
+}
+
+/* Topbar en modo claro */
+body.light-theme .topbar {
+  background: rgba(244,244,248,0.95) !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+body.light-theme .search-wrap {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.12) !important;
+}
+body.light-theme .search-wrap input { color: #1a1a2e !important; }
+
+/* Profile url bar */
+body.light-theme .profile-url-bar {
+  background: rgba(177,29,185,0.06) !important;
+}
+body.light-theme .profile-url-bar span { color: #555 !important; }
+
+/* Search bar chips */
+body.light-theme .chip,
+body.light-theme .genre-chip {
+  background: #f0f0f5 !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: #555 !important;
+}
+body.light-theme .chip.active,
+body.light-theme .genre-chip.active {
+  background: rgba(177,29,185,0.1) !important;
+  border-color: #b11db9 !important;
+  color: #b11db9 !important;
+}
+
+/* Search input bar */
+body.light-theme .search-input-row {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.1) !important;
+}
+body.light-theme .search-input { color: #1a1a2e !important; }
+body.light-theme .search-input::placeholder { color: #999 !important; }
+
+/* Config page títulos */
+body.light-theme .config-page h1 { color: #1a1a2e !important; }
+body.light-theme .save-msg.ok {
+  background: rgba(46,204,113,0.1) !important;
+  color: #1a7a42 !important;
+}
+
+/* Home page */
+body.light-theme .home-page { background: var(--bg) !important; }
+body.light-theme .section-header h2 { color: #1a1a2e !important; }
+body.light-theme .cat-overlay h3 { color: #fff !important; }
+body.light-theme .cat-overlay p { color: rgba(255,255,255,0.85) !important; }
+
+/* Pricing cards */
+body.light-theme .price-card {
+  background: #f4f4f8 !important;
+  border-color: rgba(0,0,0,0.1) !important;
+}
+body.light-theme .card-header h4 { color: #1a1a2e !important; }
+body.light-theme .price { color: #1a1a2e !important; }
+body.light-theme .features li { color: #555 !important; border-color: rgba(0,0,0,0.06) !important; }
+
+/* Upload forms */
+body.light-theme .cover-dropzone,
+body.light-theme .video-dropzone,
+body.light-theme .audio-dropzone {
+  border-color: rgba(0,0,0,0.15) !important;
+}
+body.light-theme .cover-placeholder { color: #999 !important; }
+
+/* Tabs en BeatModal */
+body.light-theme .tab { color: #666 !important; }
+body.light-theme .tab.active { color: #b11db9 !important; }
+body.light-theme .tabs { border-color: rgba(0,0,0,0.08) !important; }
+
+/* Comments */
+body.light-theme .comments-list { }
+body.light-theme .no-comments { color: #999 !important; }
+body.light-theme .comment-input {
+  background: #f0f0f5 !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: #1a1a2e !important;
+}
+
+/* Beat details en modal */
+body.light-theme .beat-details li { color: #444 !important; }
+body.light-theme .beat-details li strong { color: #b11db9 !important; }
+
+/* Type cards selector */
+body.light-theme .type-card {
+  background: #f4f4f8 !important;
+  border-color: rgba(0,0,0,0.1) !important;
+}
+body.light-theme .type-label { color: #1a1a2e !important; }
+body.light-theme .type-desc { color: #666 !important; }
+body.light-theme .selector-header h2 { color: #1a1a2e !important; }

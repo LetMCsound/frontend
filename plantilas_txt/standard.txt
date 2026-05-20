@@ -1,0 +1,18 @@
+LICENCIA DE USO - STANDARD LEASE
+
+ID TRANSACCIÓN: {ID_VENTA}
+FECHA: {FECHA}
+
+VENDEDOR: LetMC Sound
+COMPRADOR: {COMPRADOR}
+
+ARTÍCULO: "{TITULO}"
+PRECIO: {PRECIO}€
+
+CONDICIONES:
+Este archivo MP3 puede ser usado para demos y streaming limitado (50,000 streams).
+No incluye los stems (pistas separadas).
+El productor mantiene la propiedad intelectual del beat.
+
+__________________________
+Firma LetMC Sound
