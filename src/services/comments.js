@@ -1,27 +1,23 @@
+import { api } from '@/lib/api'
 import { supabase } from './supabase'
 
+/**
+ * Service de comentarios — CRUD via backend, realtime via Supabase directo.
+ */
 export const commentsService = {
   async getComments(contentId, contentType) {
-    return supabase
-      .from('comments')
-      .select('*')
-      .eq('content_id', contentId)
-      .eq('content_type', contentType)
-      .order('created_at', { ascending: true })
+    return api.get('/comments', { params: { contentId, contentType } })
   },
 
   async addComment({ userId, userName, contentId, contentType, text }) {
-    return supabase
-      .from('comments')
-      .insert([{ user_id: userId, user_name: userName, content_id: contentId, content_type: contentType, text }])
-      .select()
-      .single()
+    return api.post('/comments', { contentId, contentType, text }, { auth: true })
   },
 
   async deleteComment(id) {
-    return supabase.from('comments').delete().eq('id', id)
+    return api.delete(`/comments/${id}`, { auth: true })
   },
 
+  // ── Realtime: sigue usando Supabase directo (los WebSockets no pueden ir por REST) ──
   subscribe(contentId, contentType, callback) {
     return supabase
       .channel(`comments:${contentId}`)
