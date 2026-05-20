@@ -1,44 +1,35 @@
+import { api } from '@/lib/api'
 import { supabase } from './supabase'
 
+/**
+ * Service de films — llama al backend LetMCsound API.
+ * Uploads de archivos siguen usando Supabase Storage directamente.
+ */
 export const filmService = {
   async getFilms({ limit = 50, genre = null } = {}) {
-    let query = supabase
-      .from('film_makers')
-      .select('*')
-      .eq('is_published', true)
-      .order('created_at', { ascending: false })
-      .limit(limit)
-    if (genre) query = query.eq('genre', genre)
-    return query
+    return api.get('/films', { params: { limit, genre } })
   },
 
   async searchFilms(q, limit = 20) {
-    return supabase
-      .from('film_makers')
-      .select('*')
-      .eq('is_published', true)
-      .or(`title.ilike.%${q}%,description.ilike.%${q}%,genre.ilike.%${q}%`)
-      .limit(limit)
+    return api.get('/films/search', { params: { q, limit } })
   },
 
   async createFilm(film) {
-    return supabase.from('film_makers').insert([film]).select().single()
+    return api.post('/films', film, { auth: true })
   },
 
   async updateFilm(id, updates) {
-    return supabase.from('film_makers').update(updates).eq('id', id).select().single()
+    return api.put(`/films/${id}`, updates, { auth: true })
   },
 
   async incrementViews(id) {
-    return supabase.rpc('increment_film_views', { film_id: id })
+    return api.post(`/films/${id}/view`)
   },
 
   async uploadThumbnail(file, id) {
     const ext = file.name.split('.').pop()
     const path = `covers/film-${id}.${ext}`
-    const { error } = await supabase.storage
-      .from('beats-media')
-      .upload(path, file, { upsert: true })
+    const { error } = await supabase.storage.from('beats-media').upload(path, file, { upsert: true })
     if (error) return { url: null, error }
     const { data } = supabase.storage.from('beats-media').getPublicUrl(path)
     return { url: data.publicUrl, error: null }
@@ -47,9 +38,7 @@ export const filmService = {
   async uploadVideo(file, id) {
     const ext = file.name.split('.').pop()
     const path = `audio/film-${id}.${ext}`
-    const { error } = await supabase.storage
-      .from('beats-media')
-      .upload(path, file, { upsert: true, contentType: file.type })
+    const { error } = await supabase.storage.from('beats-media').upload(path, file, { upsert: true, contentType: file.type })
     if (error) return { url: null, error }
     const { data } = supabase.storage.from('beats-media').getPublicUrl(path)
     return { url: data.publicUrl, error: null }

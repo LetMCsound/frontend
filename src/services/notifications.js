@@ -1,43 +1,27 @@
+import { api } from '@/lib/api'
 import { supabase } from './supabase'
 
+/**
+ * Service de notificaciones — CRUD via backend, realtime via Supabase directo.
+ */
 export const notificationsService = {
-
   async getNotifications(userId) {
-    return supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(30)
+    return api.get('/notifications', { auth: true })
   },
 
   async markAsRead(id) {
-    return supabase
-      .from('notifications')
-      .update({ is_read: true })
-      .eq('id', id)
+    return api.patch(`/notifications/${id}/read`, null, { auth: true })
   },
 
   async markAllAsRead(userId) {
-    return supabase
-      .from('notifications')
-      .update({ is_read: true })
-      .eq('user_id', userId)
-      .eq('is_read', false)
+    return api.patch('/notifications/read-all', null, { auth: true })
   },
 
   async createNotification({ userId, type, title, body, conversationId = null }) {
-    return supabase
-      .from('notifications')
-      .insert([{
-        user_id: userId,
-        type,
-        title,
-        body,
-        conversation_id: conversationId
-      }])
+    return api.post('/notifications', { userId, type, title, body, conversationId }, { auth: true })
   },
 
+  // ── Realtime: sigue usando Supabase directo ──
   subscribeToNotifications(userId, callback) {
     return supabase
       .channel(`notifications:${userId}`)

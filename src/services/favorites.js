@@ -1,37 +1,24 @@
-import { supabase } from './supabase'
+import { api } from '@/lib/api'
 
+/**
+ * Service de favoritos — llama al backend LetMCsound API.
+ * Compatibilidad: mantiene la misma firma de funciones que la versión Supabase.
+ */
 export const favoritesService = {
   async isFavorite(userId, contentId) {
-    const { data } = await supabase
-      .from('favorites')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('content_id', contentId)
-      .maybeSingle()
-    return !!data
+    const { data } = await api.get(`/favorites/check/${contentId}`, { auth: true })
+    return data?.isFavorite ?? false
   },
 
   async addFavorite(userId, contentId, contentType) {
-    return supabase
-      .from('favorites')
-      .insert([{ user_id: userId, content_id: contentId, content_type: contentType }])
+    return api.post('/favorites', { contentId, contentType }, { auth: true })
   },
 
   async removeFavorite(userId, contentId) {
-    return supabase
-      .from('favorites')
-      .delete()
-      .eq('user_id', userId)
-      .eq('content_id', contentId)
+    return api.delete(`/favorites/${contentId}`, { auth: true })
   },
 
   async getMyFavorites(userId, contentType = null) {
-    let query = supabase
-      .from('favorites')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-    if (contentType) query = query.eq('content_type', contentType)
-    return query
+    return api.get('/favorites', { params: { contentType }, auth: true })
   }
 }
