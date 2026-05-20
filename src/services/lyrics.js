@@ -1,43 +1,45 @@
+import { api } from '@/lib/api'
 import { supabase } from './supabase'
 
+/**
+ * Queries de lyrics — llaman al backend LetMCsound API.
+ * Las funciones de upload siguen usando Supabase Storage directamente.
+ */
 export const lyricsService = {
   async getLyrics({ limit = 50, genre = null, language = null } = {}) {
-    let query = supabase
-      .from('lyrics')
-      .select('*')
-      .eq('is_published', true)
-      .order('likes', { ascending: false })
-      .limit(limit)
-    if (genre)    query = query.eq('genre', genre)
-    if (language) query = query.eq('language', language)
-    return query
+    return api.get('/lyrics', { params: { limit, genre, language } })
   },
 
   async getLyricById(id) {
-    return supabase.from('lyrics').select('*').eq('id', id).single()
+    return api.get(`/lyrics/${id}`)
+  },
+
+  async getLyricsBySeller(sellerId) {
+    return api.get(`/lyrics/seller/${sellerId}`)
   },
 
   async searchLyrics(query, limit = 20) {
-    return supabase
-      .from('lyrics')
-      .select('*')
-      .eq('is_published', true)
-      .or(`title.ilike.%${query}%,description.ilike.%${query}%,genre.ilike.%${query}%`)
-      .limit(limit)
+    return api.get('/lyrics/search', { params: { q: query, limit } })
   },
 
   async createLyric(lyric) {
-    return supabase.from('lyrics').insert([lyric]).select().single()
+    return api.post('/lyrics', lyric, { auth: true })
   },
 
   async updateLyric(id, updates) {
-    return supabase.from('lyrics').update(updates).eq('id', id).select().single()
+    return api.put(`/lyrics/${id}`, updates, { auth: true })
+  },
+
+  async deleteLyric(id) {
+    return api.delete(`/lyrics/${id}`, { auth: true })
   },
 
   async uploadCover(file, id) {
     const ext = file.name.split('.').pop()
     const path = `covers/lyric-${id}.${ext}`
-    const { error } = await supabase.storage.from('beats-media').upload(path, file, { upsert: true })
+    const { error } = await supabase.storage
+      .from('beats-media')
+      .upload(path, file, { upsert: true })
     if (error) return { url: null, error }
     const { data } = supabase.storage.from('beats-media').getPublicUrl(path)
     return { url: data.publicUrl, error: null }
@@ -46,7 +48,9 @@ export const lyricsService = {
   async uploadAudio(file, id) {
     const ext = file.name.split('.').pop()
     const path = `audio/lyric-${id}.${ext}`
-    const { error } = await supabase.storage.from('beats-media').upload(path, file, { upsert: true, contentType: file.type })
+    const { error } = await supabase.storage
+      .from('beats-media')
+      .upload(path, file, { upsert: true, contentType: file.type })
     if (error) return { url: null, error }
     const { data } = supabase.storage.from('beats-media').getPublicUrl(path)
     return { url: data.publicUrl, error: null }
