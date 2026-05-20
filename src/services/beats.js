@@ -1,21 +1,19 @@
+import { api } from '@/lib/api'
 import { supabase } from './supabase'
 
 /**
- * Todas las queries de Supabase relacionadas con beats.
- * Las vistas y composables usan este servicio, nunca llaman
- * a supabase directamente.
+ * Queries de beats — llaman al backend LetMCsound API.
+ * Las funciones de upload de archivos siguen usando Supabase Storage directamente
+ * porque el backend no expone endpoints de storage (Supabase Storage ya es seguro
+ * via RLS).
+ *
+ * Devuelve { data, error } al estilo Supabase para compatibilidad con los
+ * composables y vistas existentes.
  */
 export const beatsService = {
 
   /**
-   * Obtener todos los beats publicados.
-   * @param {Object} options
-   * @param {string} [options.sellerId]  - Filtrar por vendedor
-   * @param {string} [options.type]      - 'Beat' | 'Song' | 'Sample'
-   * @param {string} [options.genre]     - Filtrar por género
-   * @param {number} [options.limit]     - Número máximo de resultados
-   * @param {string} [options.orderBy]   - Campo de ordenación
-   * @param {boolean}[options.ascending] - Dirección del orden
+   * Lista pública de beats. Filtros: sellerId, type, genre, limit, orderBy, ascending.
    */
   async getBeats({
     sellerId = null,
@@ -25,142 +23,99 @@ export const beatsService = {
     orderBy = 'created_at',
     ascending = false
   } = {}) {
-    let query = supabase
-      .from('beats')
-      .select('*')
-      .eq('is_published', true)
-      .order(orderBy, { ascending })
-      .limit(limit)
-
-    if (sellerId) query = query.eq('seller_id', sellerId)
-    if (type)     query = query.eq('type', type)
-    if (genre)    query = query.eq('genre', genre)
-
-    return query
+    return api.get('/beats', {
+      params: { sellerId, type, genre, limit, orderBy, ascending }
+    })
   },
 
   /**
-   * Obtener beats más populares (por likes).
+   * Beats más populares (top by likes).
    */
   async getPopular(limit = 8) {
-    return supabase
-      .from('beats')
-      .select('*')
-      .eq('is_published', true)
-      .order('likes', { ascending: false })
-      .limit(limit)
+    return api.get('/beats/popular', { params: { limit } })
   },
 
   /**
-   * Obtener un beat por su ID.
+   * Detalle de un beat.
    */
   async getBeatById(id) {
-    return supabase
-      .from('beats')
-      .select('*')
-      .eq('id', id)
-      .single()
+    return api.get(`/beats/${id}`)
   },
 
   /**
-   * Obtener todos los beats de un vendedor concreto.
-   * Incluye los no publicados (para el panel del artista).
+   * Beats de un vendedor concreto. Incluye los no publicados (panel artista).
    */
   async getBeatsBySeller(sellerId) {
-    return supabase
-      .from('beats')
-      .select('*')
-      .eq('seller_id', sellerId)
-      .order('created_at', { ascending: false })
+    return api.get(`/beats/seller/${sellerId}`)
   },
 
   /**
-   * Crear un nuevo beat.
+   * Crea un nuevo beat. Requiere auth.
    */
   async createBeat(beat) {
-    return supabase
-      .from('beats')
-      .insert([beat])
-      .select()
-      .single()
+    return api.post('/beats', beat, { auth: true })
   },
 
   /**
-   * Actualizar un beat existente.
+   * Actualiza un beat. Requiere auth y ser propietario.
    */
   async updateBeat(id, updates) {
-    return supabase
-      .from('beats')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single()
+    return api.put(`/beats/${id}`, updates, { auth: true })
   },
 
   /**
-   * Incrementar el contador de likes de un beat.
+   * Elimina un beat.
+   */
+  async deleteBeat(id) {
+    return api.delete(`/beats/${id}`, { auth: true })
+  },
+
+  /**
+   * +1 like.
    */
   async incrementLikes(id) {
-    return supabase.rpc('increment_beat_likes', { beat_id: id })
+    return api.post(`/beats/${id}/like`)
   },
 
   /**
-   * Incrementar el contador de plays de un beat.
+   * +1 play.
    */
   async incrementPlays(id) {
-    return supabase.rpc('increment_beat_plays', { beat_id: id })
+    return api.post(`/beats/${id}/play`)
   },
 
   /**
-   * Buscar beats por texto (título, descripción, etiquetas).
+   * Búsqueda textual.
    */
   async searchBeats(query, limit = 20) {
-    return supabase
-      .from('beats')
-      .select('*')
-      .eq('is_published', true)
-      .or(`title.ilike.%${query}%,description.ilike.%${query}%,genre.ilike.%${query}%`)
-      .limit(limit)
+    return api.get('/beats/search', { params: { q: query, limit } })
   },
 
   /**
-   * Subir una portada a Supabase Storage.
-   * Devuelve la URL pública del archivo.
+   * Subir portada — sigue usando Supabase Storage directamente.
    */
   async uploadCover(file, beatId) {
     const ext = file.name.split('.').pop()
     const path = `covers/${beatId}.${ext}`
-
     const { error } = await supabase.storage
       .from('beats-media')
       .upload(path, file, { upsert: true })
-
     if (error) return { url: null, error }
-
-    const { data } = supabase.storage
-      .from('beats-media')
-      .getPublicUrl(path)
-
+    const { data } = supabase.storage.from('beats-media').getPublicUrl(path)
     return { url: data.publicUrl, error: null }
   },
 
   /**
-   * Subir un audio preview a Supabase Storage.
+   * Subir audio preview — sigue usando Supabase Storage directamente.
    */
   async uploadAudio(file, beatId) {
     const ext = file.name.split('.').pop()
     const path = `audio/${beatId}.${ext}`
-
     const { error } = await supabase.storage
       .from('beats-media')
       .upload(path, file, { upsert: true })
-
     if (error) return { url: null, error }
-
-    const { data } = supabase.storage
-      .from('beats-media')
-      .getPublicUrl(path)
-
+    const { data } = supabase.storage.from('beats-media').getPublicUrl(path)
     return { url: data.publicUrl, error: null }
   }
 }
