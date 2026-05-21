@@ -22,8 +22,14 @@ export const profileService = {
   async uploadAvatar(file, userId) {
     const ext = file.name.split('.').pop()
     const path = `avatars/${userId}.${ext}`
-    const { error } = await supabase.storage.from('beats-media').upload(path, file, { upsert: true })
-    if (error) return { url: null, error }
+    const { error } = await supabase.storage.from('beats-media').upload(path, file, {
+      upsert: true,
+      contentType: file.type
+    })
+    if (error) {
+      console.error('[uploadAvatar] error completo:', error)
+      return { url: null, error }
+    }
     const { data } = supabase.storage.from('beats-media').getPublicUrl(path)
     return { url: data.publicUrl, error: null }
   },
@@ -31,8 +37,14 @@ export const profileService = {
   async uploadCover(file, userId) {
     const ext = file.name.split('.').pop()
     const path = `covers/profile-${userId}.${ext}`
-    const { error } = await supabase.storage.from('beats-media').upload(path, file, { upsert: true })
-    if (error) return { url: null, error }
+    const { error } = await supabase.storage.from('beats-media').upload(path, file, {
+      upsert: true,
+      contentType: file.type
+    })
+    if (error) {
+      console.error('[uploadCover] error completo:', error)
+      return { url: null, error }
+    }
     const { data } = supabase.storage.from('beats-media').getPublicUrl(path)
     return { url: data.publicUrl, error: null }
   }

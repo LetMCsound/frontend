@@ -59,7 +59,9 @@ async function request(path, options = {}) {
 
     const json = await response.json()
     if (!response.ok) {
-      return { data: null, error: { status: response.status, message: json.error || 'Error', details: json.details } }
+      const err = { status: response.status, message: json.error || 'Error', details: json.details }
+      console.error(`[api] ${method} ${path} →`, response.status, err)
+      return { data: null, error: err }
     }
     return { data: json, error: null }
   } catch (err) {

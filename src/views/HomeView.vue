@@ -145,7 +145,8 @@ const categories = [
 
 /* Botones del banner — siempre con contraste sobre fondo oscuro */
 .btn-hero-primary {
-  display: flex; align-items: center; gap: 8px;
+  display: inline-flex; align-items: center; gap: 8px;
+  margin: 0 auto;
   background: #b11db9; color: #fff !important; border: none;
   padding: 12px 28px; border-radius: 30px;
   font-size: 0.95rem; font-weight: 600; cursor: pointer;
@@ -155,7 +156,8 @@ const categories = [
 .btn-hero-primary:hover { background: #9a18a3; transform: translateY(-2px); }
 
 .btn-hero-outline {
-  display: flex; align-items: center; gap: 8px;
+  display: inline-flex; align-items: center; gap: 8px;
+  margin: 0 auto;
   background: transparent; color: #fff !important;
   border: 1px solid rgba(255,255,255,0.5);
   padding: 12px 28px; border-radius: 30px;

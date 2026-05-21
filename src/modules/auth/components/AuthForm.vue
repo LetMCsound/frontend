@@ -11,6 +11,7 @@ const form = ref({ email: '', password: '' })
 const errorMessage = ref('')
 const loading = ref(false)
 const showTransition = ref(false)
+const showPassword = ref(false)
 
 function toggleMode() {
   showRegister.value = !showRegister.value
@@ -56,7 +57,19 @@ function enterProfile() {
           </div>
           <div class="input-group">
             <label>Contraseña</label>
-            <input type="password" v-model="form.password" required placeholder="Tu contraseña" />
+            <div class="password-wrapper">
+              <input
+                :type="showPassword ? 'text' : 'password'"
+                v-model="form.password"
+                required
+                placeholder="Tu contraseña"
+              />
+              <i
+                :class="showPassword ? 'ri-eye-line' : 'ri-eye-off-line'"
+                @click="showPassword = !showPassword"
+                :title="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+              ></i>
+            </div>
             <p v-if="showRegister" class="password-hint">
               Mínimo 8 caracteres, 1 Mayúscula, 1 Número, 1 Símbolo
             </p>
@@ -120,6 +133,22 @@ function enterProfile() {
 }
 .input-group input:focus { outline: none; border-color: #b11db9; }
 .password-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; }
+
+/* Ojo para ver/ocultar contraseña */
+.password-wrapper { position: relative; }
+.password-wrapper input { padding-right: 2.75rem; }
+.password-wrapper i {
+  position: absolute;
+  right: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: var(--text-muted, #aaa);
+  font-size: 1.15rem;
+  transition: color 0.2s;
+  user-select: none;
+}
+.password-wrapper i:hover { color: #b11db9; }
 .auth-btn {
   width: 100%; padding: 0.75rem 1.5rem;
   background: #b11db9; color: white; border: none;

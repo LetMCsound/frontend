@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useTheme } from '@/composables/useTheme'
@@ -40,18 +40,27 @@ const timezones = [
 ]
 
 async function load() {
-  const { data } = await profileService.getMyProfile(authStore.user.id)
-  if (data) {
-    profile.value   = data
-    name.value      = data.name || ''
-    bio.value       = data.bio || ''
-    location.value  = data.location || ''
-    linkIG.value    = data.link_instagram || ''
-    linkSC.value    = data.link_soundcloud || ''
-    linkYT.value    = data.link_youtube || ''
-    linkSpotify.value = data.link_spotify || ''
-    avatarPreview.value = data.avatar_url || null
-    coverPreview.value  = data.cover_url  || null
+  if (!authStore.user) return
+  try {
+    const { data, error } = await profileService.getMyProfile(authStore.user.id)
+    if (error) {
+      console.error('[ConfigView] error cargando perfil:', error)
+      return
+    }
+    if (data) {
+      profile.value   = data
+      name.value      = data.name || ''
+      bio.value       = data.bio || ''
+      location.value  = data.location || ''
+      linkIG.value    = data.link_instagram || ''
+      linkSC.value    = data.link_soundcloud || ''
+      linkYT.value    = data.link_youtube || ''
+      linkSpotify.value = data.link_spotify || ''
+      avatarPreview.value = data.avatar_url || null
+      coverPreview.value  = data.cover_url  || null
+    }
+  } catch (e) {
+    console.error('[ConfigView] excepción cargando perfil:', e)
   }
 }
 
@@ -117,7 +126,12 @@ async function logout() {
   router.push('/profile')
 }
 
-onMounted(load)
+// Cargar perfil cuando el usuario esté disponible (puede no estarlo al montar)
+watch(
+  () => authStore.user,
+  (newUser) => { if (newUser) load() },
+  { immediate: true }
+)
 </script>
 
 <template>
@@ -222,9 +236,8 @@ onMounted(load)
       <button class="btn-primary" @click="savePreferences">Guardar preferencias</button>
     </section>
 
-    <!-- Zona de peligro -->
+    <!-- Acciones de cuenta -->
     <section class="config-section danger-section">
-      <h2><i class="ri-error-warning-fill"></i> Zona de peligro</h2>
       <div class="danger-actions">
         <button class="btn-danger" @click="logout">
           <i class="ri-logout-box-fill"></i> Cerrar sesión

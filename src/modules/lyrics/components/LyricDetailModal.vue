@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { commentsService } from '@/services/comments'
 import { favoritesService } from '@/services/favorites'
+import { confirmDialog } from '@/composables/useConfirm'
 import { supabase } from '@/services/supabase'
 
 const props = defineProps({
@@ -73,6 +74,22 @@ async function sendComment() {
   } finally {
     sending.value = false
   }
+}
+
+async function deleteComment(id) {
+  const ok = await confirmDialog({
+    title: 'Eliminar comentario',
+    message: 'Esta acción no se puede deshacer.',
+    confirmText: 'Eliminar',
+    danger: true
+  })
+  if (!ok) return
+  const { error } = await commentsService.deleteComment(id)
+  if (error) {
+    alert('Error al eliminar: ' + (error.message || ''))
+    return
+  }
+  comments.value = comments.value.filter(c => c.id !== id)
 }
 
 async function toggleFav() {
@@ -246,6 +263,14 @@ onUnmounted(() => commentsService.unsubscribe(channel))
                   <p class="comment-text">{{ c.text }}</p>
                   <span class="comment-time">{{ formatTime(c.created_at) }}</span>
                 </div>
+                <button
+                  v-if="authStore.user?.id === c.user_id"
+                  class="comment-delete"
+                  @click="deleteComment(c.id)"
+                  title="Eliminar comentario"
+                >
+                  <i class="ri-delete-bin-line"></i>
+                </button>
               </div>
             </div>
             <div class="comment-input-row">
@@ -333,7 +358,18 @@ onUnmounted(() => commentsService.unsubscribe(channel))
 .lyric-comments h3 span { color: var(--text-muted, #666); font-size: 0.75rem; margin-left: 5px; }
 .comments-list { flex: 1; overflow-y: auto; padding: 0 1.25rem; }
 .no-comments { color: var(--text-muted, #555); font-size: 0.82rem; text-align: center; padding: 1rem 0; }
-.comment-item { display: flex; gap: 8px; margin-bottom: 10px; }
+.comment-item { display: flex; gap: 8px; margin-bottom: 10px; align-items: flex-start; }
+.comment-delete {
+  background: none; border: none;
+  color: var(--text-muted, #666);
+  cursor: pointer; padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: color 0.2s, background 0.2s;
+  opacity: 0;
+}
+.comment-item:hover .comment-delete { opacity: 1; }
+.comment-delete:hover { color: #ff4d4d; background: rgba(255,77,77,0.1); }
 .comment-avatar { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, #b11db9, #7b2cbf); display: flex; align-items: center; justify-content: center; color: var(--text); font-size: 0.7rem; font-weight: 700; }
 .comment-body { flex: 1; }
 .comment-author { color: var(--text, #fff); font-size: 0.78rem; font-weight: 600; margin-bottom: 1px; }
