@@ -14,6 +14,10 @@ export const filmService = {
     return api.get('/films/search', { params: { q, limit } })
   },
 
+  async getFilmsBySeller(sellerId) {
+    return api.get(`/films/seller/${sellerId}`)
+  },
+
   async createFilm(film) {
     return api.post('/films', film, { auth: true })
   },

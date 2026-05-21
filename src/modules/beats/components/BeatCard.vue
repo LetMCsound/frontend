@@ -49,9 +49,11 @@ const emit = defineEmits(['click'])
   background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
   color: white; display: flex; flex-direction: column; justify-content: flex-end;
 }
-.project-info h3 { margin: 0 0 5px; font-size: 1.1rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.project-info p { margin: 0 0 10px; font-size: 0.85rem; color: var(--text-soft); }
-.project-stats { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #b11db9; font-weight: bold; }
+/* El gradiente del .project-info es siempre oscuro, así que el texto va fijo en claro
+   (no usar var(--text-soft) porque en light mode sería texto oscuro sobre fondo oscuro) */
+.project-info h3 { margin: 0 0 5px; font-size: 1.1rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.project-info p  { margin: 0 0 10px; font-size: 0.85rem; color: rgba(255,255,255,0.75); }
+.project-stats { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #d97aff; font-weight: bold; }
 
 @media (max-width: 768px) {
   .project-card { height: 220px; }

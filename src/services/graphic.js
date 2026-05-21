@@ -14,6 +14,10 @@ export const graphicService = {
     return api.get('/graphics/search', { params: { q, limit } })
   },
 
+  async getDesignsBySeller(sellerId) {
+    return api.get(`/graphics/seller/${sellerId}`)
+  },
+
   async createDesign(design) {
     return api.post('/graphics', design, { auth: true })
   },

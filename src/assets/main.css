@@ -22,6 +22,7 @@
   --bg:            #0b0b0f;
   --bg-surface:    #111116;
   --bg-card:       rgba(255,255,255,0.04);
+  --bg-card-soft:  rgba(255,255,255,0.03);
   --bg-sidebar:    #0d0d12;
   --border:        rgba(255,255,255,0.08);
   --border-strong: rgba(255,255,255,0.14);
@@ -38,6 +39,7 @@ body.light-theme {
   --bg:            #f4f4f8;
   --bg-surface:    #ffffff;
   --bg-card:       #ffffff;
+  --bg-card-soft:  #f4f4f8;
   --bg-sidebar:    #1a0a2e;
   --border:        rgba(0,0,0,0.08);
   --border-strong: rgba(0,0,0,0.16);
@@ -665,3 +667,106 @@ body.light-theme .type-card {
 body.light-theme .type-label { color: #1a1a2e !important; }
 body.light-theme .type-desc { color: #666 !important; }
 body.light-theme .selector-header h2 { color: #1a1a2e !important; }
+
+/* =====================================================
+   Profile tabs y mini cards (Beats / Lyrics / Films / Graphics)
+   ===================================================== */
+body.light-theme .profile-tabs {
+  border-color: rgba(0,0,0,0.08) !important;
+}
+body.light-theme .tab {
+  background: #f4f4f8 !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: #555 !important;
+}
+body.light-theme .tab:hover {
+  border-color: #b11db9 !important;
+  color: #1a1a2e !important;
+}
+body.light-theme .tab.active {
+  background: rgba(177,29,185,0.1) !important;
+  border-color: #b11db9 !important;
+  color: #b11db9 !important;
+}
+body.light-theme .tab-count {
+  background: rgba(177,29,185,0.25) !important;
+  color: #b11db9 !important;
+}
+body.light-theme .tab.active .tab-count {
+  background: #b11db9 !important;
+  color: #fff !important;
+}
+body.light-theme .content-title { color: #1a1a2e !important; }
+body.light-theme .lyric-mini,
+body.light-theme .film-mini,
+body.light-theme .graphic-mini {
+  background: #f4f4f8 !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+body.light-theme .lyric-mini:hover,
+body.light-theme .film-mini:hover,
+body.light-theme .graphic-mini:hover {
+  border-color: #b11db9 !important;
+  box-shadow: 0 4px 12px rgba(177,29,185,0.15) !important;
+}
+body.light-theme .lyric-info h4,
+body.light-theme .film-info h4,
+body.light-theme .graphic-info h4 { color: #1a1a2e !important; }
+body.light-theme .lyric-info p,
+body.light-theme .film-info p,
+body.light-theme .graphic-info p { color: #666 !important; }
+body.light-theme .film-thumb {
+  background-color: #e8e8ee !important;
+}
+body.light-theme .film-thumb i { color: rgba(177,29,185,0.3) !important; }
+
+/* =====================================================
+   ConfirmDialog en light mode
+   ===================================================== */
+body.light-theme .confirm-box {
+  background: #ffffff !important;
+  border-color: rgba(177,29,185,0.3) !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 40px rgba(177,29,185,0.1) !important;
+}
+body.light-theme .confirm-box.danger {
+  border-color: rgba(255,77,77,0.4) !important;
+}
+body.light-theme .confirm-title { color: #1a1a2e !important; }
+body.light-theme .confirm-message { color: #555 !important; }
+body.light-theme .btn-cancel {
+  background: #f0f0f5 !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: #555 !important;
+}
+body.light-theme .btn-cancel:hover {
+  background: #e8e8ee !important;
+  color: #1a1a2e !important;
+}
+
+/* =====================================================
+   Genre chips en ProfileView FilterBar (override hover claro)
+   ===================================================== */
+body.light-theme .genre-chip:hover {
+  color: #1a1a2e !important;
+}
+body.light-theme .genre-chip.active {
+  color: #b11db9 !important;
+}
+
+/* =====================================================
+   Stat pills (en headers de views) y header-text p
+   ===================================================== */
+body.light-theme .stat-pill {
+  background: rgba(177,29,185,0.1) !important;
+  color: #b11db9 !important;
+}
+body.light-theme .header-text p { color: #666 !important; }
+
+/* =====================================================
+   Footer del beat card (project-info se queda con su gradiente oscuro,
+   pero aseguramos que el texto esté siempre claro)
+   ===================================================== */
+body.light-theme .project-info h3,
+body.light-theme .project-info .project-author,
+body.light-theme .project-info p { color: #fff !important; }
+body.light-theme .project-info .project-stats { color: #d97aff !important; }
