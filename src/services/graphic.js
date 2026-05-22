@@ -22,6 +22,14 @@ export const graphicService = {
     return api.post('/graphics', design, { auth: true })
   },
 
+  async updateDesign(id, updates) {
+    return api.put(`/graphics/${id}`, updates, { auth: true })
+  },
+
+  async deleteDesign(id) {
+    return api.delete(`/graphics/${id}`, { auth: true })
+  },
+
   async uploadCover(file, id) {
     const ext = file.name.split('.').pop()
     const path = `covers/graphic-${id}.${ext}`

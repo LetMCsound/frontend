@@ -26,6 +26,10 @@ export const filmService = {
     return api.put(`/films/${id}`, updates, { auth: true })
   },
 
+  async deleteFilm(id) {
+    return api.delete(`/films/${id}`, { auth: true })
+  },
+
   async incrementViews(id) {
     return api.post(`/films/${id}/view`)
   },
