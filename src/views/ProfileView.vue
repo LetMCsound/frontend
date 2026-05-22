@@ -18,6 +18,9 @@ import NewLyricForm from '@/modules/lyrics/components/NewLyricForm.vue'
 import FilmDetailModal from '@/modules/film/components/FilmDetailModal.vue'
 import LyricDetailModal from '@/modules/lyrics/components/LyricDetailModal.vue'
 import PinDetailModal from '@/modules/graphic/components/PinDetailModal.vue'
+import EditPublicationModal from '@/components/ui/EditPublicationModal.vue'
+import { beatsService } from '@/services/beats'
+import { confirmDialog } from '@/composables/useConfirm'
 
 const authStore  = useAuthStore()
 const { beats, loading: beatsLoading, fetchBySeller } = useBeats()
@@ -39,6 +42,44 @@ const lyrics    = ref([])
 const films     = ref([])
 const graphics  = ref([])
 const activeTab = ref('all') // all | beats | lyrics | films | graphics
+const editingItem = ref(null) // { type, item } cuando se está editando
+
+function startEdit(type, item) {
+  editingItem.value = { type, item }
+}
+
+async function deleteItem(type, item) {
+  const ok = await confirmDialog({
+    title: '¿Eliminar publicación?',
+    message: `"${item.title}" se eliminará permanentemente.`,
+    confirmText: 'Eliminar',
+    danger: true
+  })
+  if (!ok) return
+  try {
+    if (type === 'beat')    await beatsService.deleteBeat(item.id)
+    if (type === 'lyric')   await lyricsService.deleteLyric(item.id)
+    if (type === 'film')    await filmService.deleteFilm(item.id)
+    if (type === 'graphic') await graphicService.deleteDesign(item.id)
+    // Refrescar la lista correspondiente
+    if (type === 'beat')    await fetchBySeller(authStore.user.id)
+    if (type === 'lyric')   await loadLyrics()
+    if (type === 'film')    await loadFilms()
+    if (type === 'graphic') await loadGraphics()
+  } catch (e) {
+    alert('Error al eliminar: ' + (e.message || ''))
+  }
+}
+
+async function onEditSaved() {
+  // Refrescar todo después de editar
+  await Promise.all([
+    fetchBySeller(authStore.user.id),
+    loadLyrics(),
+    loadFilms(),
+    loadGraphics()
+  ])
+}
 
 async function load() {
   if (!authStore.user) return
@@ -169,12 +210,17 @@ watch(
           <div v-if="(activeTab === 'all' || activeTab === 'beats') && beats.length" class="content-block">
             <h3 v-if="activeTab === 'all'" class="content-title"><i class="ri-music-2-fill"></i> Beats</h3>
             <div class="project-grid">
-              <BeatCard
-                v-for="beat in beats"
-                :key="beat.id"
-                v-bind="beat"
-                @click="selectedBeat = beat"
-              />
+              <div v-for="beat in beats" :key="beat.id" class="card-with-actions">
+                <BeatCard v-bind="beat" @click="selectedBeat = beat" />
+                <div class="card-actions">
+                  <button class="card-action edit" @click.stop="startEdit('beat', beat)" title="Editar">
+                    <i class="ri-edit-line"></i>
+                  </button>
+                  <button class="card-action delete" @click.stop="deleteItem('beat', beat)" title="Eliminar">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -182,12 +228,22 @@ watch(
           <div v-if="(activeTab === 'all' || activeTab === 'lyrics') && lyrics.length" class="content-block">
             <h3 v-if="activeTab === 'all'" class="content-title"><i class="ri-quill-pen-fill"></i> Lyrics</h3>
             <div class="lyrics-grid">
-              <div v-for="l in lyrics" :key="l.id" class="lyric-mini" @click="selectedLyric = l">
-                <img :src="l.cover_url || '/assets/letmc.png'" :alt="l.title" />
-                <div class="lyric-info">
-                  <h4>{{ l.title }}</h4>
-                  <p>{{ l.genre || 'Sin género' }} · {{ l.language || 'es' }}</p>
-                  <span class="likes-pill"><i class="ri-heart-fill"></i> {{ l.likes || 0 }}</span>
+              <div v-for="l in lyrics" :key="l.id" class="card-with-actions">
+                <div class="lyric-mini" @click="selectedLyric = l">
+                  <img :src="l.cover_url || '/assets/letmc.png'" :alt="l.title" />
+                  <div class="lyric-info">
+                    <h4>{{ l.title }}</h4>
+                    <p>{{ l.genre || 'Sin género' }} · {{ l.language || 'es' }}</p>
+                    <span class="likes-pill"><i class="ri-heart-fill"></i> {{ l.likes || 0 }}</span>
+                  </div>
+                </div>
+                <div class="card-actions">
+                  <button class="card-action edit" @click.stop="startEdit('lyric', l)" title="Editar">
+                    <i class="ri-edit-line"></i>
+                  </button>
+                  <button class="card-action delete" @click.stop="deleteItem('lyric', l)" title="Eliminar">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
                 </div>
               </div>
             </div>
@@ -197,14 +253,24 @@ watch(
           <div v-if="(activeTab === 'all' || activeTab === 'films') && films.length" class="content-block">
             <h3 v-if="activeTab === 'all'" class="content-title"><i class="ri-film-fill"></i> Films</h3>
             <div class="films-grid">
-              <div v-for="f in films" :key="f.id" class="film-mini" @click="selectedFilm = f">
-                <div class="film-thumb" :style="f.thumbnail_url ? `background-image: url('${f.thumbnail_url}')` : ''">
-                  <i v-if="!f.thumbnail_url" class="ri-film-fill"></i>
-                  <span v-if="f.duration" class="duration">{{ f.duration }}</span>
+              <div v-for="f in films" :key="f.id" class="card-with-actions">
+                <div class="film-mini" @click="selectedFilm = f">
+                  <div class="film-thumb" :style="f.thumbnail_url ? `background-image: url('${f.thumbnail_url}')` : ''">
+                    <i v-if="!f.thumbnail_url" class="ri-film-fill"></i>
+                    <span v-if="f.duration" class="duration">{{ f.duration }}</span>
+                  </div>
+                  <div class="film-info">
+                    <h4>{{ f.title }}</h4>
+                    <p>{{ f.genre || 'Sin género' }}</p>
+                  </div>
                 </div>
-                <div class="film-info">
-                  <h4>{{ f.title }}</h4>
-                  <p>{{ f.genre || 'Sin género' }}</p>
+                <div class="card-actions">
+                  <button class="card-action edit" @click.stop="startEdit('film', f)" title="Editar">
+                    <i class="ri-edit-line"></i>
+                  </button>
+                  <button class="card-action delete" @click.stop="deleteItem('film', f)" title="Eliminar">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
                 </div>
               </div>
             </div>
@@ -214,11 +280,21 @@ watch(
           <div v-if="(activeTab === 'all' || activeTab === 'graphics') && graphics.length" class="content-block">
             <h3 v-if="activeTab === 'all'" class="content-title"><i class="ri-brush-fill"></i> Graphics</h3>
             <div class="graphics-grid">
-              <div v-for="g in graphics" :key="g.id" class="graphic-mini" @click="selectedGraphic = g">
-                <img :src="g.cover_url || '/assets/letmc.png'" :alt="g.title" />
-                <div class="graphic-info">
-                  <h4>{{ g.title }}</h4>
-                  <p>{{ g.style || 'Sin estilo' }}</p>
+              <div v-for="g in graphics" :key="g.id" class="card-with-actions">
+                <div class="graphic-mini" @click="selectedGraphic = g">
+                  <img :src="g.cover_url || '/assets/letmc.png'" :alt="g.title" />
+                  <div class="graphic-info">
+                    <h4>{{ g.title }}</h4>
+                    <p>{{ g.style || 'Sin estilo' }}</p>
+                  </div>
+                </div>
+                <div class="card-actions">
+                  <button class="card-action edit" @click.stop="startEdit('graphic', g)" title="Editar">
+                    <i class="ri-edit-line"></i>
+                  </button>
+                  <button class="card-action delete" @click.stop="deleteItem('graphic', g)" title="Eliminar">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
                 </div>
               </div>
             </div>
@@ -243,6 +319,15 @@ watch(
       <LyricDetailModal v-if="selectedLyric"   :lyric="selectedLyric"    @close="selectedLyric   = null" />
       <PinDetailModal   v-if="selectedGraphic" :design="selectedGraphic" @close="selectedGraphic = null" />
     </Teleport>
+
+    <!-- Modal de edición -->
+    <EditPublicationModal
+      v-if="editingItem"
+      :type="editingItem.type"
+      :item="editingItem.item"
+      @close="editingItem = null"
+      @updated="onEditSaved"
+    />
 
     <Teleport to="body">
       <ContentTypeSelector v-if="showSelector" @close="showSelector = false" @select="onSelectType" />
@@ -288,6 +373,46 @@ watch(
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1rem;
+}
+
+/* Card wrapper con acciones flotantes (editar/eliminar) */
+.card-with-actions {
+  position: relative;
+}
+.card-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+.card-with-actions:hover .card-actions { opacity: 1; }
+
+.card-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  backdrop-filter: blur(4px);
+}
+.card-action.edit:hover {
+  background: #b11db9;
+  border-color: #b11db9;
+}
+.card-action.delete:hover {
+  background: #ff4d4d;
+  border-color: #ff4d4d;
 }
 
 /* Altura consistente: beats override (overlay), films y graphics suman thumb + info */
