@@ -40,7 +40,7 @@ body.light-theme {
   --bg-surface:    #ffffff;
   --bg-card:       #ffffff;
   --bg-card-soft:  #f4f4f8;
-  --bg-sidebar:    #1a0a2e;
+  --bg-sidebar:    #5b2c8e;
   --border:        rgba(0,0,0,0.08);
   --border-strong: rgba(0,0,0,0.16);
   --text:          #1a1a2e;
@@ -667,6 +667,68 @@ body.light-theme .type-card {
 body.light-theme .type-label { color: #1a1a2e !important; }
 body.light-theme .type-desc { color: #666 !important; }
 body.light-theme .selector-header h2 { color: #1a1a2e !important; }
+
+/* =====================================================
+   SIDEBAR en light mode
+   Como el fondo del sidebar es morado (#5b2c8e), los iconos
+   y textos van en blanco para contrastar bien.
+   ===================================================== */
+body.light-theme .sidebar .nav-item,
+body.light-theme .sidebar .theme-btn {
+  color: rgba(255,255,255,0.9) !important;
+}
+/* IMPORTANTE: hay una regla global para spans en light-theme que oscurece el texto.
+   Forzamos el color blanco también en las nav-label y nav-icon. */
+body.light-theme .sidebar .nav-item .nav-label,
+body.light-theme .sidebar .theme-btn .nav-label {
+  color: rgba(255,255,255,0.9) !important;
+}
+body.light-theme .sidebar .nav-item .nav-icon i,
+body.light-theme .sidebar .theme-btn .nav-icon i {
+  color: rgba(255,255,255,0.9) !important;
+}
+body.light-theme .sidebar .nav-item:hover,
+body.light-theme .sidebar .theme-btn:hover {
+  background: rgba(255,255,255,0.15) !important;
+  color: #ffffff !important;
+}
+body.light-theme .sidebar .nav-item:hover .nav-icon i,
+body.light-theme .sidebar .theme-btn:hover .nav-icon i,
+body.light-theme .sidebar .nav-item:hover .nav-label,
+body.light-theme .sidebar .theme-btn:hover .nav-label {
+  color: #ffffff !important;
+}
+body.light-theme .sidebar .nav-item.active {
+  background: rgba(255,255,255,0.18) !important;
+  color: #ffffff !important;
+  border-right-color: #ffffff !important;
+}
+body.light-theme .sidebar .nav-item.active .nav-icon i,
+body.light-theme .sidebar .nav-item.active .nav-label {
+  color: #ffffff !important;
+}
+body.light-theme .sidebar .sidebar-logo {
+  border-color: rgba(255,255,255,0.15) !important;
+}
+
+/* =====================================================
+   GradualBlur de la landing page
+   - El sidebar y el topbar tienen z-index 1500 (>1100 del blur),
+     así que el blur queda detrás de ellos sin necesidad de offsets.
+   - Solo limitamos el width para que el blur no se ancle bajo el
+     sidebar (evita backdrop-filter sobre el área del sidebar y
+     mejora el rendimiento).
+   ===================================================== */
+.landing-blur {
+  left: 72px !important;
+  width: calc(100% - 72px) !important;
+}
+@media (max-width: 768px) {
+  .landing-blur {
+    left: 0 !important;
+    width: 100% !important;
+  }
+}
 
 /* =====================================================
    Profile tabs y mini cards (Beats / Lyrics / Films / Graphics)
