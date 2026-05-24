@@ -1,16 +1,24 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBeats } from '@/composables/useBeats'
+import { useAuthStore } from '@/stores/auth'
 import BeatCard from '@/modules/beats/components/BeatCard.vue'
 import BeatModal from '@/modules/beats/components/BeatModal.vue'
 import StateDisplay from '@/components/ui/StateDisplay.vue'
+import LandingView from '@/views/LandingView.vue'
 
 const router = useRouter()
+const authStore = useAuthStore()
 const { popular, loading, error, fetchPopular } = useBeats()
 const selectedBeat = ref(null)
 
-onMounted(() => fetchPopular(4))
+// Solo cargar beats populares si el usuario está logueado
+watch(
+  () => authStore.isAuthenticated,
+  (isAuth) => { if (isAuth) fetchPopular(4) },
+  { immediate: true }
+)
 
 const categories = [
   { label: 'Sounds',    desc: 'Beats, melodías y samples',    icon: 'ri-music-2-fill',      route: '/sound',          img: '/assets/musicians.png' },
@@ -22,7 +30,11 @@ const categories = [
 </script>
 
 <template>
-  <div class="home-page">
+  <!-- Si NO está logueado → mostrar landing page de marketing -->
+  <LandingView v-if="!authStore.isAuthenticated" />
+
+  <!-- Si está logueado → mostrar el feed con beats populares -->
+  <div v-else class="home-page">
 
     <!-- Hero banner -->
     <section class="banner">

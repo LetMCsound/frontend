@@ -55,7 +55,7 @@ function onSearch() {
   border-bottom: 1px solid rgba(255,255,255,0.06);
   background: rgba(11,11,15,0.95);
   backdrop-filter: blur(10px);
-  position: sticky; top: 0; z-index: 90;
+  position: sticky; top: 0; z-index: 1500;
 }
 
 .search-wrap {
