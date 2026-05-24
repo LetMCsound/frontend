@@ -29,8 +29,16 @@ const licenses = [
 ]
 
 async function comprarBeat(licencia, precio) {
-  if (!confirm(`¿Confirmar compra de licencia ${licencia} por $${precio}?`)) return
-  if (!authStore.isAuthenticated) { alert('Por favor inicia sesión para comprar'); return }
+  if (!authStore.isAuthenticated) {
+    await confirmDialog({ title: 'Sesión requerida', message: 'Por favor inicia sesión para comprar.', confirmText: 'Entendido', cancelText: 'Cerrar' })
+    return
+  }
+  const ok = await confirmDialog({
+    title: `Licencia ${licencia}`,
+    message: `¿Confirmar compra de la licencia ${licencia} por $${precio}?`,
+    confirmText: 'Comprar'
+  })
+  if (!ok) return
   purchasing.value = true
   try {
     const { error: ventaError } = await db.insertVenta({
@@ -46,21 +54,17 @@ async function comprarBeat(licencia, precio) {
     if (!token) { alert('Sesión expirada'); return }
 
     const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-contrato`,
+      `${import.meta.env.VITE_API_URL}/api/contratos/generar`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          tipo: 'beat',
           titulo: props.beat.title,
           precio,
-          licencia,
-          comprador: authStore.userEmail,
-          vendedor: props.beat.sellerName || 'Vendedor'
+          licencia
         })
       }
     )
