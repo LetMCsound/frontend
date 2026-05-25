@@ -40,9 +40,17 @@ async function request(path, options = {}) {
 
   // Auth: adjuntar JWT si la ruta lo requiere o si hay sesión
   if (auth) {
-    const { data: { session } } = await supabase.auth.getSession()
+    let { data: { session } } = await supabase.auth.getSession()
+    // Si no hay sesión activa intentar refrescar (token expirado)
+    if (!session?.access_token) {
+      const { data: refreshed } = await supabase.auth.refreshSession()
+      session = refreshed?.session ?? null
+    }
     if (session?.access_token) {
       headers.Authorization = `Bearer ${session.access_token}`
+    } else {
+      // Sin token no tiene sentido hacer la petición — devolver 401 local
+      return { data: null, error: { status: 401, message: 'Sesión no disponible' } }
     }
   }
 
