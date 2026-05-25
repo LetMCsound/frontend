@@ -44,6 +44,13 @@ const isOwnProfile = computed(() =>
   authStore.user && musician.value?.user_id === authStore.user.id
 )
 
+const tagsExpanded = ref(false)
+const visibleCategories = computed(() => {
+  const cats = musician.value?.categories ?? []
+  return tagsExpanded.value ? cats : cats.slice(0, 3)
+})
+const hasMoreTags = computed(() => (musician.value?.categories?.length ?? 0) > 3)
+
 function formatNum(n) {
   if (!n) return '0'
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M'
@@ -143,21 +150,37 @@ onMounted(load)
       <!-- Header -->
       <section class="profile-header" :style="musician.cover_url ? `background-image: url('${musician.cover_url}')` : ''">
         <div class="header-overlay">
+
+          <!-- Avatar (reordenado en mobile: va primero) -->
+          <div class="avatar-container">
+            <img :src="musician.avatar_url || '/assets/letmc.png'" :alt="musician.name" class="avatar" />
+          </div>
+
           <div class="header-left">
             <h1 class="artist-name">{{ musician.name.toUpperCase() }}</h1>
-            <div class="categories">
-              <span v-for="cat in musician.categories" :key="cat" class="cat-chip">{{ cat }}</span>
-            </div>
+
+            <!-- Bio -->
             <p class="artist-bio" v-if="musician.bio">{{ musician.bio }}</p>
+
+            <!-- Localización + seguidores -->
             <div class="artist-meta">
               <span v-if="musician.location"><i class="ri-map-pin-line"></i> {{ musician.location }}</span>
               <span v-if="stats"><i class="ri-user-follow-fill"></i> {{ formatNum(stats.total_followers) }} seguidores</span>
               <span v-if="musician.is_verified" class="verified"><i class="ri-verified-badge-fill"></i> Verificado</span>
             </div>
+
+            <!-- Etiquetas con colapso -->
+            <div class="categories" v-if="musician.categories?.length">
+              <span v-for="cat in visibleCategories" :key="cat" class="cat-chip">{{ cat }}</span>
+              <button v-if="hasMoreTags && !tagsExpanded" class="tags-toggle" @click="tagsExpanded = true">
+                +{{ musician.categories.length - 3 }} más
+              </button>
+              <button v-if="tagsExpanded && hasMoreTags" class="tags-toggle" @click="tagsExpanded = false">
+                Ver menos
+              </button>
+            </div>
           </div>
-        </div>
-        <div class="avatar-container">
-          <img :src="musician.avatar_url || '/assets/letmc.png'" :alt="musician.name" class="avatar" />
+
         </div>
       </section>
 
@@ -285,19 +308,23 @@ onMounted(load)
 <style scoped>
 .public-profile { }
 
-/* Header */
+/* Header — desktop */
 .profile-header { position: relative; height: 380px; background: linear-gradient(135deg, #1a0a2e, #2d1b4e); background-size: cover; background-position: center 30%; display: flex; align-items: flex-end; margin-bottom: 0; }
-.header-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 60%, transparent 100%); display: flex; align-items: flex-end; padding: 2rem 2rem 5rem; }
+.header-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 60%, transparent 100%); display: flex; align-items: flex-end; padding: 2rem 2rem 2rem; gap: 1.5rem; }
 .header-left { max-width: 70%; }
 .artist-name { font-family: 'Impact', sans-serif; font-size: 4rem; line-height: 1; margin-bottom: 10px; background: linear-gradient(135deg, #ffffff 0%, #d4a0ff 50%, #b11db9 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 2px 8px rgba(177,29,185,0.5)); }
-.categories { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.categories { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
 .cat-chip { background: rgba(177,29,185,0.4); color: #fff; padding: 3px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; text-transform: capitalize; }
+.tags-toggle { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.8); padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; }
+.tags-toggle:hover { background: rgba(177,29,185,0.3); border-color: #b11db9; color: #fff; }
 .artist-bio { color: rgba(255,255,255,0.85); font-size: 0.95rem; font-style: italic; margin-bottom: 10px; line-height: 1.6; background: rgba(0,0,0,0.25); padding: 8px 14px; border-radius: 8px; border-left: 3px solid rgba(177,29,185,0.6); max-width: 600px; }
-.artist-meta { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+.artist-meta { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 6px; }
 .artist-meta span { color: rgba(255,255,255,0.75); font-size: 0.85rem; display: flex; align-items: center; gap: 5px; }
 .artist-meta i { color: #b11db9; }
 .verified { color: #1d9bf0 !important; }
-.avatar-container { position: absolute; right: 2rem; bottom: -3.5rem; width: 140px; height: 140px; }
+
+/* Avatar — desktop: esquina inferior derecha absoluta */
+.avatar-container { position: absolute; right: 2rem; bottom: -3.5rem; width: 140px; height: 140px; flex-shrink: 0; }
 .avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 6px solid var(--bg, #0b0b0f); box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
 
 /* Actions */
@@ -360,14 +387,82 @@ onMounted(load)
 .empty-tab { color: var(--text-muted); text-align: center; padding: 2rem; font-size: 0.875rem; }
 
 @media (max-width: 768px) {
-  .profile-header { height: auto; min-height: 300px; }
-  .header-left { max-width: 100%; }
-  .artist-name { font-size: 2.5rem; }
-  .avatar-container { right: auto; left: 50%; transform: translateX(-50%); bottom: -3rem; width: 110px; height: 110px; }
-  .profile-actions { padding: 0 1rem 1rem; margin-top: 4rem; }
+  /* El header se convierte en columna centrada */
+  .profile-header {
+    height: auto;
+    min-height: unset;
+    padding-top: 53px; /* compensa el topbar sticky */
+    position: relative;
+  }
+  /* Degradado que cubre TODO el alto de la imagen */
+  .profile-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.92) 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .header-overlay {
+    position: relative;
+    z-index: 1;
+    background: transparent;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem 1.25rem 1.75rem;
+    gap: 0.75rem;
+  }
+
+  /* Avatar: grande y centrado, primero visualmente */
+  .avatar-container {
+    position: static;
+    transform: none;
+    width: 110px;
+    height: 110px;
+    order: -1;
+    margin-bottom: 0.25rem;
+  }
+  .avatar { border-width: 4px; }
+
+  .header-left {
+    max-width: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .artist-name { font-size: 2.2rem; margin-bottom: 6px; }
+
+  .artist-bio {
+    font-size: 0.88rem;
+    max-width: 100%;
+    text-align: left;
+    margin-bottom: 8px;
+  }
+
+  .artist-meta {
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 4px;
+  }
+
+  .categories { justify-content: center; }
+
+  /* Acciones: apilar en mobile */
+  .profile-actions {
+    padding: 1rem;
+    margin-top: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.875rem;
+  }
+  .stats-row { justify-content: center; gap: 1.5rem; }
+  .social-links { margin-left: 0; justify-content: center; }
+  .action-btns { justify-content: center; }
+
   .section { padding: 1rem; }
   .pinterest-grid { columns: 2; }
-  .stats-row { gap: 1rem; }
-  .social-links { margin-left: 0; }
 }
 </style>

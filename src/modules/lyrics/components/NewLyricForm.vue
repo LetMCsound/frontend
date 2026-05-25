@@ -2,6 +2,7 @@
 import { ref, reactive } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { lyricsService } from '@/services/lyrics'
+import CollaboratorsInput from '@/components/CollaboratorsInput.vue'
 
 const emit = defineEmits(['close', 'published'])
 const authStore = useAuthStore()
@@ -22,6 +23,7 @@ const form = reactive({
   content: '',
   tags: '',
   external_links: [],
+  collaborators: { platform: [], external: [] },
   price_standard: 19.99,
   price_premium: 49.99,
   price_exclusive: 149.99,
@@ -88,6 +90,7 @@ async function publish() {
       content:         form.content.trim() || null,
       tags:            form.tags ? form.tags.split(',').map(t => t.trim().toLowerCase()).filter(Boolean) : [],
       external_links:  JSON.stringify(form.external_links),
+      collaborators:   form.collaborators,
       price_standard:  parseFloat(form.price_standard),
       price_premium:   parseFloat(form.price_premium),
       price_exclusive: parseFloat(form.price_exclusive),
@@ -177,6 +180,8 @@ async function publish() {
           <label>Tags <span class="hint">(separados por coma)</span></label>
           <input v-model="form.tags" type="text" placeholder="rnb, love, emotional" />
         </div>
+
+        <CollaboratorsInput v-model="form.collaborators" />
       </template>
 
       <!-- Step 2: Audio, letra y links -->

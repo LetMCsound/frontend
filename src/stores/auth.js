@@ -7,11 +7,29 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
   const session = ref(null)
   const loading = ref(true)
+  const avatarUrl = ref(null)    // foto de perfil del musician
+  const displayName = ref(null)  // nombre artístico del musician
 
   // ── Getters ──────────────────────────────────────────────────
   const isAuthenticated = computed(() => !!session.value)
   const userEmail = computed(() => user.value?.email ?? '')
-  const userDisplayName = computed(() => userEmail.value.split('@')[0])
+  const userDisplayName = computed(() => displayName.value || userEmail.value.split('@')[0])
+
+  // Carga los datos básicos del perfil musician (avatar + nombre)
+  async function loadMusicianProfile() {
+    if (!user.value) return
+    try {
+      const { data } = await supabase
+        .from('musicians')
+        .select('name, avatar_url')
+        .eq('user_id', user.value.id)
+        .maybeSingle()
+      if (data) {
+        avatarUrl.value  = data.avatar_url || null
+        displayName.value = data.name || null
+      }
+    } catch { /* silencioso */ }
+  }
 
   // ── Actions ──────────────────────────────────────────────────
   async function init() {
@@ -20,11 +38,14 @@ export const useAuthStore = defineStore('auth', () => {
     session.value = s
     user.value = s?.user ?? null
     loading.value = false
+    if (user.value) loadMusicianProfile()
 
     // Keep store in sync with Supabase auth changes
     supabase.auth.onAuthStateChange((_event, newSession) => {
       session.value = newSession
       user.value = newSession?.user ?? null
+      if (newSession?.user) loadMusicianProfile()
+      else { avatarUrl.value = null; displayName.value = null }
     })
   }
 
@@ -46,6 +67,8 @@ export const useAuthStore = defineStore('auth', () => {
     await auth.signOut()
     session.value = null
     user.value = null
+    avatarUrl.value = null
+    displayName.value = null
   }
 
   return {
@@ -55,6 +78,9 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     userEmail,
     userDisplayName,
+    avatarUrl,
+    displayName,
+    loadMusicianProfile,
     init,
     login,
     register,

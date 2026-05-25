@@ -94,18 +94,30 @@ async function saveProfile() {
 
     // Subir avatar si hay
     if (avatarFile.value) {
-      const { url } = await profileService.uploadAvatar(avatarFile.value, authStore.user.id)
-      if (url) updates.avatar_url = url
+      const { url, error: avatarErr } = await profileService.uploadAvatar(avatarFile.value, authStore.user.id)
+      if (avatarErr) throw new Error('Error subiendo la foto de perfil: ' + (avatarErr.message || avatarErr))
+      if (url) {
+        updates.avatar_url = url
+        avatarPreview.value = url
+      }
     }
 
     // Subir portada si hay
     if (coverFile.value) {
-      const { url } = await profileService.uploadCover(coverFile.value, authStore.user.id)
-      if (url) updates.cover_url = url
+      const { url, error: coverErr } = await profileService.uploadCover(coverFile.value, authStore.user.id)
+      if (coverErr) throw new Error('Error subiendo la portada: ' + (coverErr.message || coverErr))
+      if (url) {
+        updates.cover_url = url
+        coverPreview.value = url
+      }
     }
 
     const { error } = await profileService.updateProfile(authStore.user.id, updates)
     if (error) throw error
+
+    // Refrescar avatar y nombre en el store (sidebar se actualiza automáticamente)
+    await authStore.loadMusicianProfile()
+
     saveMsg.value = '✅ Perfil guardado correctamente'
     avatarFile.value = null
     coverFile.value  = null

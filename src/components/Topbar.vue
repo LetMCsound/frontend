@@ -1,32 +1,21 @@
 <script setup>
-import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import NotificationsBell from '@/components/ui/NotificationsBell.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const searchQuery = ref('')
-
-function onSearch() {
-  if (searchQuery.value.trim()) {
-    router.push({ name: 'sound', query: { q: searchQuery.value } })
-  }
-}
 </script>
 
 <template>
   <header class="topbar">
-    <!-- Search -->
-    <div class="search-wrap">
-      <i class="ri-search-line"></i>
-      <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="Explore"
-        @keyup.enter="onSearch"
-      />
-    </div>
+    <!-- Logo — solo visible en mobile (el sidebar lo oculta en desktop) -->
+    <img
+      src="/assets/letmc.png"
+      alt="LetMC Sound"
+      class="topbar-logo"
+      @click="router.push('/')"
+    />
 
     <div class="topbar-right">
       <!-- Notifications bell -->
@@ -50,7 +39,7 @@ function onSearch() {
 
 <style scoped>
 .topbar {
-  display: flex; align-items: center; gap: 1rem;
+  display: flex; align-items: center; justify-content: flex-end;
   padding: 0.75rem 1.5rem;
   border-bottom: 1px solid rgba(255,255,255,0.06);
   background: rgba(11,11,15,0.95);
@@ -58,22 +47,22 @@ function onSearch() {
   position: sticky; top: 0; z-index: 1500;
 }
 
-.search-wrap {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--input-bg);
-  border: 1px solid var(--border);
-  border-radius: 20px; padding: 8px 16px; flex: 1; max-width: 400px;
-  transition: border-color 0.2s;
+/* Logo oculto en desktop — el sidebar ya lo muestra */
+.topbar-logo {
+  display: none;
+  height: 28px;
+  width: auto;
+  cursor: pointer;
+  margin-right: auto;
+  opacity: 0.92;
 }
-.search-wrap:focus-within { border-color: #b11db9; }
-.search-wrap i { color: #555; font-size: 0.95rem; }
-.search-wrap input {
-  background: transparent; border: none; outline: none;
-  color: var(--text); font-size: 0.9rem; width: 100%;
-}
-.search-wrap input::placeholder { color: #555; }
 
-.topbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+@media (max-width: 768px) {
+  .topbar { justify-content: space-between; }
+  .topbar-logo { display: block; }
+}
+
+.topbar-right { display: flex; align-items: center; gap: 10px; }
 
 .user-avatar {
   width: 34px; height: 34px; border-radius: 50%;

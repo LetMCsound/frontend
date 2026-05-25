@@ -2,6 +2,7 @@
 import { ref, reactive } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { filmService } from '@/services/film'
+import CollaboratorsInput from '@/components/CollaboratorsInput.vue'
 
 const emit = defineEmits(['close', 'published'])
 const authStore = useAuthStore()
@@ -20,7 +21,8 @@ const form = reactive({
   video_url: '',
   duration: '',
   tags: '',
-  price: 99.99
+  price: 99.99,
+  collaborators: { platform: [], external: [] },
 })
 
 const genres = ['Music Video', 'Documentary', 'Short Film', 'Behind The Scenes', 'Live Performance', 'Otro']
@@ -67,6 +69,7 @@ async function publish() {
       video_url:    form.video_url.trim() || null,
       duration:     form.duration.trim() || null,
       tags:         form.tags ? form.tags.split(',').map(t => t.trim().toLowerCase()).filter(Boolean) : [],
+      collaborators: form.collaborators,
       price:        parseFloat(form.price),
       is_published: true
     }
@@ -183,6 +186,8 @@ async function publish() {
         <label>Precio base ($)</label>
         <input v-model="form.price" type="number" min="0" step="0.01" />
       </div>
+
+      <CollaboratorsInput v-model="form.collaborators" />
 
       <!-- Progress bar -->
       <div v-if="loading && uploadProgress > 0" class="progress-wrap">
