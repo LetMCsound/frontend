@@ -1,15 +1,12 @@
 <script setup>
 import { computed } from 'vue'
-import { useTheme } from '@/composables/useTheme'
 import { useAuthStore } from '@/stores/auth'
 
-const { theme, toggleTheme } = useTheme()
 const authStore = useAuthStore()
 
 // Cada item tiene `requiresAuth`. Si es true, solo se muestra cuando hay sesión.
 const allNavItems = [
   { to: '/',               icon: 'ri-home-smile-2-fill',  label: 'Home',      requiresAuth: false },
-  { to: '/profile',        icon: 'ri-user-3-fill',        label: 'Profile',   requiresAuth: true  },
   { to: '/sound',          icon: 'ri-music-2-fill',       label: 'Sounds',    requiresAuth: false },
   { to: '/lyrics',         icon: 'ri-folder-music-fill',  label: 'Lyrics',    requiresAuth: false },
   { to: '/musicians',      icon: 'ri-disc-fill',          label: 'Musicians', requiresAuth: false },
@@ -59,13 +56,26 @@ const mobileItems = computed(() =>
       </router-link>
     </nav>
 
-    <!-- Theme toggle -->
-    <button class="theme-btn" @click="toggleTheme">
+    <!-- Perfil de usuario — al fondo, con foto real -->
+    <router-link
+      v-if="authStore.isAuthenticated"
+      to="/profile"
+      active-class="active"
+      class="nav-item profile-bottom"
+    >
       <span class="nav-icon">
-        <i :class="theme === 'dark' ? 'ri-sun-fill' : 'ri-moon-fill'"></i>
+        <img
+          v-if="authStore.avatarUrl"
+          :src="authStore.avatarUrl"
+          class="sidebar-avatar"
+          :alt="authStore.userDisplayName"
+        />
+        <span v-else class="sidebar-avatar-placeholder">
+          {{ authStore.userDisplayName.charAt(0).toUpperCase() }}
+        </span>
       </span>
-      <span class="nav-label">{{ theme === 'dark' ? 'Modo claro' : 'Modo oscuro' }}</span>
-    </button>
+      <span class="nav-label">{{ authStore.userDisplayName }}</span>
+    </router-link>
   </aside>
 
   <!-- ── Mobile bottom nav ───────────────────────── -->
@@ -187,30 +197,36 @@ const mobileItems = computed(() =>
 }
 .sidebar:hover .nav-label { opacity: 1; }
 
-/* Theme button */
-.theme-btn {
-  all: unset;
+/* Perfil al fondo */
+.profile-bottom {
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  height: 60px;
+}
+.sidebar-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #b11db9;
+  display: block;
+}
+.sidebar-avatar-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #b11db9, #7b2cbf);
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 20px;
-  height: 52px;
-  color: var(--text-muted);
-  cursor: pointer;
-  border-top: 1px solid var(--border);
-  transition: background 0.15s, color 0.15s;
-  white-space: nowrap;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
   flex-shrink: 0;
 }
-.theme-btn:hover {
-  background: var(--accent-light);
-  color: var(--text);
-}
-.theme-btn .nav-label {
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-.sidebar:hover .theme-btn .nav-label { opacity: 1; }
+
+/* Nombre del perfil al expandir sidebar */
+.sidebar:hover .profile-bottom .nav-label { opacity: 1; }
 
 /* Light theme sidebar */
 :global(body.light-theme) .sidebar {

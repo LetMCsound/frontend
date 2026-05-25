@@ -11,11 +11,14 @@ export const profileService = {
   },
 
   async updateProfile(userId, updates) {
-    // Obtener primero el id del musician para poder hacer el PUT
+    // Intentar obtener el perfil existente
     const { data: profile } = await api.get('/musicians/me', { auth: true })
+
     if (!profile?.id) {
-      return { data: null, error: { message: 'Perfil no encontrado. Créalo primero.' } }
+      // No existe → crearlo con los datos actuales (upsert)
+      return api.post('/musicians', updates, { auth: true })
     }
+
     return api.put(`/musicians/${profile.id}`, updates, { auth: true })
   },
 
