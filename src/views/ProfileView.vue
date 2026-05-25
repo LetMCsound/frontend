@@ -20,6 +20,7 @@ import LyricDetailModal from '@/modules/lyrics/components/LyricDetailModal.vue'
 import PinDetailModal from '@/modules/graphic/components/PinDetailModal.vue'
 import EditPublicationModal from '@/components/ui/EditPublicationModal.vue'
 import { beatsService } from '@/services/beats'
+import { favoritesService } from '@/services/favorites'
 import { confirmDialog } from '@/composables/useConfirm'
 
 const authStore  = useAuthStore()
@@ -41,8 +42,12 @@ const showLyricForm   = ref(false)
 const lyrics    = ref([])
 const films     = ref([])
 const graphics  = ref([])
-const activeTab = ref('all') // all | beats | lyrics | films | graphics
+const activeTab = ref('all') // all | beats | lyrics | films | graphics | saved
 const editingItem = ref(null) // { type, item } cuando se está editando
+
+// Guardados
+const savedItems   = ref([])   // favoritos con contenido resuelto
+const savedLoading = ref(false)
 
 function startEdit(type, item) {
   editingItem.value = { type, item }
@@ -111,6 +116,40 @@ async function loadGraphics() {
   graphics.value = data || []
 }
 
+async function loadSaved() {
+  savedLoading.value = true
+  try {
+    const { data: favs } = await favoritesService.getMyFavorites(authStore.user.id)
+    if (!favs || !favs.length) { savedItems.value = []; return }
+
+    // Resolver el contenido real de cada favorito en paralelo
+    const resolved = await Promise.allSettled(favs.map(async (fav) => {
+      try {
+        let content = null
+        if (fav.content_type === 'beat')    { const r = await beatsService.getBeatById(fav.content_id);   content = r.data }
+        if (fav.content_type === 'lyric')   { const r = await lyricsService.getLyricById(fav.content_id); content = r.data }
+        if (fav.content_type === 'film')    { const r = await filmService.getFilmById(fav.content_id);    content = r.data }
+        if (fav.content_type === 'graphic') { const r = await graphicService.getDesignById(fav.content_id); content = r.data }
+        if (!content) return null
+        return { ...content, _savedType: fav.content_type, _favId: fav.id }
+      } catch { return null }
+    }))
+
+    savedItems.value = resolved
+      .filter(r => r.status === 'fulfilled' && r.value !== null)
+      .map(r => r.value)
+  } catch (e) {
+    savedItems.value = []
+  } finally {
+    savedLoading.value = false
+  }
+}
+
+async function removeSaved(item) {
+  await favoritesService.removeFavorite(authStore.user.id, item.id)
+  savedItems.value = savedItems.value.filter(s => s.id !== item.id)
+}
+
 const totalCount = computed(() =>
   beats.value.length + lyrics.value.length + films.value.length + graphics.value.length
 )
@@ -138,6 +177,13 @@ watch(
   (newUser) => { if (newUser) load() },
   { immediate: true }
 )
+
+// Cargar guardados la primera vez que se abre esa pestaña
+watch(activeTab, (tab) => {
+  if (tab === 'saved' && savedItems.value.length === 0 && !savedLoading.value) {
+    loadSaved()
+  }
+})
 </script>
 
 <template>
@@ -201,6 +247,9 @@ watch(
             </button>
             <button :class="['tab', { active: activeTab === 'graphics' }]" @click="activeTab = 'graphics'">
               <i class="ri-brush-fill"></i> Graphics <span class="tab-count">{{ graphics.length }}</span>
+            </button>
+            <button :class="['tab', { active: activeTab === 'saved' }]" @click="activeTab = 'saved'">
+              <i class="ri-bookmark-fill"></i> Guardados <span class="tab-count">{{ savedItems.length }}</span>
             </button>
           </div>
 
@@ -300,8 +349,48 @@ watch(
             </div>
           </div>
 
-          <!-- Empty state -->
-          <div v-if="!beatsLoading && totalCount === 0" class="empty-state">
+          <!-- Guardados -->
+          <div v-if="activeTab === 'saved'">
+            <StateDisplay :loading="savedLoading" />
+            <div v-if="!savedLoading && savedItems.length" class="saved-grid">
+              <div v-for="item in savedItems" :key="item._favId" class="saved-card">
+                <!-- Icono de tipo -->
+                <div class="saved-type-badge">
+                  <i v-if="item._savedType === 'beat'"    class="ri-music-2-fill"></i>
+                  <i v-if="item._savedType === 'lyric'"   class="ri-quill-pen-fill"></i>
+                  <i v-if="item._savedType === 'film'"    class="ri-film-fill"></i>
+                  <i v-if="item._savedType === 'graphic'" class="ri-brush-fill"></i>
+                </div>
+                <!-- Imagen -->
+                <div class="saved-thumb"
+                  :style="(item.cover_url || item.thumbnail_url) ? `background-image: url('${item.cover_url || item.thumbnail_url}')` : ''"
+                  @click="() => {
+                    if (item._savedType === 'beat')    selectedBeat    = item
+                    if (item._savedType === 'lyric')   selectedLyric   = item
+                    if (item._savedType === 'film')    selectedFilm    = item
+                    if (item._savedType === 'graphic') selectedGraphic = item
+                  }"
+                >
+                  <i v-if="!item.cover_url && !item.thumbnail_url" class="ri-image-line"></i>
+                </div>
+                <div class="saved-info">
+                  <h4>{{ item.title }}</h4>
+                  <p>{{ item.seller_name || item.genre || item.style || '' }}</p>
+                </div>
+                <button class="saved-remove" @click.stop="removeSaved(item)" title="Quitar de guardados">
+                  <i class="ri-bookmark-fill"></i>
+                </button>
+              </div>
+            </div>
+            <div v-if="!savedLoading && savedItems.length === 0" class="empty-state">
+              <i class="ri-bookmark-line"></i>
+              <p>Aún no has guardado nada.</p>
+              <span style="font-size:0.85rem;color:#666;">Guarda beats, lyrics, films o diseños con el icono <i class="ri-bookmark-line"></i></span>
+            </div>
+          </div>
+
+          <!-- Empty state publicaciones -->
+          <div v-if="activeTab !== 'saved' && !beatsLoading && totalCount === 0" class="empty-state">
             <i class="ri-music-2-line"></i>
             <p>Aún no tienes publicaciones.</p>
             <button class="btn-publish-first" @click="showSelector = true">
@@ -530,6 +619,48 @@ watch(
 .graphic-info { padding: 10px 12px; }
 .graphic-info h4 { font-size: 0.85rem; color: var(--text); margin: 0 0 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .graphic-info p { font-size: 0.72rem; color: var(--text-muted); margin: 0; }
+
+/* Guardados */
+.saved-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.saved-card {
+  position: relative;
+  background: var(--bg-card-soft, rgba(255,255,255,0.03));
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.saved-card:hover { border-color: #b11db9; transform: translateY(-2px); }
+.saved-type-badge {
+  position: absolute; top: 8px; left: 8px; z-index: 2;
+  background: rgba(0,0,0,0.7); color: #b11db9;
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem;
+}
+.saved-thumb {
+  height: 150px;
+  background-size: cover; background-position: center;
+  background-color: #1a1a1d;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.saved-thumb i { font-size: 2.5rem; color: rgba(177,29,185,0.3); }
+.saved-info { padding: 10px 12px 32px; }
+.saved-info h4 { font-size: 0.9rem; color: var(--text); margin: 0 0 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.saved-info p  { font-size: 0.75rem; color: var(--text-muted); margin: 0; }
+.saved-remove {
+  position: absolute; bottom: 8px; right: 8px;
+  background: rgba(177,29,185,0.15); border: 1px solid rgba(177,29,185,0.3);
+  color: #b11db9; width: 28px; height: 28px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; cursor: pointer; transition: background 0.2s;
+}
+.saved-remove:hover { background: #b11db9; color: #fff; }
 
 @media (max-width: 768px) {
   .profile-content { padding: 1rem; }

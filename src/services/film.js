@@ -14,6 +14,10 @@ export const filmService = {
     return api.get('/films/search', { params: { q, limit } })
   },
 
+  async getFilmById(id) {
+    return api.get(`/films/${id}`)
+  },
+
   async getFilmsBySeller(sellerId) {
     return api.get(`/films/seller/${sellerId}`)
   },
