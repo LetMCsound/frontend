@@ -155,6 +155,22 @@ const categories = [
   display: block;
 }
 
+/* Centrar logo en mobile */
+@media (max-width: 768px) {
+  .banner {
+    align-items: center;
+    justify-content: center;
+  }
+  .banner-logo-wrap {
+    padding: 0;
+    align-self: center;
+    text-align: center;
+  }
+  .banner-logo {
+    width: 200px;
+  }
+}
+
 /* Botones del banner — siempre con contraste sobre fondo oscuro */
 .btn-hero-primary {
   display: inline-flex; align-items: center; gap: 8px;
@@ -276,7 +292,7 @@ const categories = [
   .beats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
-  .banner { height: 340px; }
+  .banner { height: 180px; }
   .banner-title { font-size: 2rem; }
   .section { padding: 1rem; }
   .categories-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
@@ -286,7 +302,7 @@ const categories = [
 }
 @media (max-width: 480px) {
   .beats-grid { grid-template-columns: 1fr; }
-  .banner-logo { width: 70px; }
+  .banner-logo { width: 160px; }
   .banner-title { font-size: 1.75rem; }
 }
 </style>

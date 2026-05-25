@@ -2,6 +2,7 @@
 import { ref, reactive } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { beatsService } from '@/services/beats'
+import CollaboratorsInput from '@/components/CollaboratorsInput.vue'
 
 const emit = defineEmits(['close', 'published'])
 const authStore = useAuthStore()
@@ -29,6 +30,7 @@ const form = reactive({
   price_standard: 29.99,
   price_premium: 79.99,
   price_exclusive: 199.99,
+  collaborators: { platform: [], external: [] },
 })
 
 const genres = [
@@ -93,6 +95,7 @@ async function publish() {
       scale: form.scale || null,
       release_date: form.release_date,
       tags: form.tags ? form.tags.split(',').map(t => t.trim().toLowerCase()).filter(Boolean) : [],
+      collaborators: form.collaborators,
       price_standard: parseFloat(form.price_standard),
       price_premium: parseFloat(form.price_premium),
       price_exclusive: parseFloat(form.price_exclusive),
@@ -217,6 +220,8 @@ async function publish() {
           <label>Tags <span class="hint">(separados por coma: trap, dark, 808)</span></label>
           <input v-model="form.tags" type="text" placeholder="trap, dark, 808, melodic" />
         </div>
+
+        <CollaboratorsInput v-model="form.collaborators" />
       </div>
 
       <!-- ── STEP 2: Archivos ── -->

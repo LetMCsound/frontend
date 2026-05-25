@@ -2,6 +2,7 @@
 import { ref, reactive } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { graphicService } from '@/services/graphic'
+import CollaboratorsInput from '@/components/CollaboratorsInput.vue'
 
 const emit = defineEmits(['close', 'published'])
 const authStore = useAuthStore()
@@ -15,7 +16,8 @@ const form = reactive({
   description: '',
   style: '',
   tags: '',
-  price: 49.99
+  price: 49.99,
+  collaborators: { platform: [], external: [] },
 })
 
 const styles = ['Dark / Minimal', 'R&B / Smooth', 'Branding / Logo', 'Social Media', 'Trap / Urban', 'Pop / Colorful', 'Otro']
@@ -41,6 +43,7 @@ async function publish() {
       description: form.description.trim(),
       style: form.style,
       tags: form.tags ? form.tags.split(',').map(t => t.trim().toLowerCase()).filter(Boolean) : [],
+      collaborators: form.collaborators,
       price: parseFloat(form.price),
       is_published: true
     }
@@ -111,6 +114,8 @@ async function publish() {
         <label>Precio base ($)</label>
         <input v-model="form.price" type="number" min="0" step="0.01" />
       </div>
+
+      <CollaboratorsInput v-model="form.collaborators" />
     </div>
 
     <div class="form-footer">

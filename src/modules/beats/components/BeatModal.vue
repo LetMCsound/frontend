@@ -183,6 +183,14 @@ onUnmounted(() => commentsService.unsubscribe(channel))
 <template>
   <div class="modal-overlay" @click.self="close">
     <div class="modal-content">
+      <!-- Barra de cierre — solo visible en mobile -->
+      <div class="modal-topbar">
+        <button class="close-modal-mobile" @click="close">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <!-- Botón X — solo en desktop -->
       <button class="close-modal" @click="close">&times;</button>
 
       <div class="modal-grid">
@@ -321,8 +329,8 @@ onUnmounted(() => commentsService.unsubscribe(channel))
 .beat-tags { display: flex; flex-wrap: wrap; gap: 5px; width: 100%; }
 .tag { background: rgba(177,29,185,0.15); color: #b11db9; padding: 2px 8px; border-radius: 20px; font-size: 0.72rem; }
 
-.modal-right { padding: 28px; display: flex; flex-direction: column; }
-.beat-type-badge { display: inline-block; background: rgba(177,29,185,0.2); color: #b11db9; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+.modal-right { padding: 28px 48px 28px 28px; display: flex; flex-direction: column; }
+.beat-type-badge { display: inline-block; background: rgba(177,29,185,0.2); color: #b11db9; padding: 2px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; width: fit-content; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .beat-title { font-family: 'Impact', sans-serif; font-size: 2rem; color: var(--text, #fff); margin-bottom: 10px; line-height: 1.1; }
 .beat-desc { color: var(--text-soft, #bbb); line-height: 1.6; margin-bottom: 16px; font-size: 0.875rem; }
 
@@ -385,7 +393,29 @@ onUnmounted(() => commentsService.unsubscribe(channel))
 .login-note { color: var(--text-muted, #666); font-size: 0.82rem; flex: 1; }
 .login-note a { color: #b11db9; text-decoration: none; }
 
+/* Barra de cierre mobile (oculta en desktop) */
+.modal-topbar {
+  display: none;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 14px 0;
+}
+.close-modal-mobile {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: #fff;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
 @media (max-width: 768px) {
+  .modal-overlay { padding: 0; align-items: flex-end; }
+  .modal-content { border-radius: 20px 20px 0 0; max-height: 95vh; }
+  .modal-topbar { display: flex; }
+  .close-modal { display: none; }       /* ocultar la X absoluta en mobile */
   .modal-grid { grid-template-columns: 1fr; }
   .modal-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
   .pricing-cards { grid-template-columns: 1fr; }
