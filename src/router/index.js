@@ -11,6 +11,7 @@ const GraphicDesignView = () => import('@/views/GraphicDesignView.vue')
 const FilmMakersView    = () => import('@/views/FilmMakersView.vue')
 const ConfigView        = () => import('@/views/ConfigView.vue')
 const ChatView          = () => import('@/views/ChatView.vue')
+const PresentationView  = () => import('@/views/PresentationView.vue')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,7 @@ const router = createRouter({
     { path: '/film-makers',    name: 'film',          component: FilmMakersView },
     { path: '/chat',           name: 'chat',          component: ChatView,   meta: { requiresAuth: true } },
     { path: '/configuration',  name: 'configuration', component: ConfigView, meta: { requiresAuth: true } },
+    { path: '/presentacion',   name: 'presentation',  component: PresentationView, meta: { standalone: true } },
     { path: '/:pathMatch(.*)*', redirect: '/' }
   ]
 })
